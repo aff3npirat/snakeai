@@ -18,7 +18,7 @@ from src.snake_game import SnakeGame
 @click.option("-m",
               "--model",
               "model_",
-              type=click.Choice(["lin", "adaptive"]),
+              type=click.Choice(["lin", "adaptive", "simple"]),
               help="Determines which model to use.")
 @click.option("-y",
               "--gamma",

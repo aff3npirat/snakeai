@@ -6,6 +6,19 @@ from src.base import ModelBase
 
 
 # Models
+class SimpleDecay(ModelBase):
+
+    def __init__(self, eps):
+        super().__init__(eps=eps, n_games=0)
+        self.Q = {}
+
+    def get_action(self, world_state):
+        k = (self.n_games + 1) / 100
+        if random.random() < self.eps/k or world_state not in self.Q:
+            return random.choice([0, 1, 2, 3])
+        return np.argmax(self.Q[world_state])
+
+
 class LinDecayEpsGreedy(ModelBase):
     """Chance of doing random action decreases linear with number of games played."""
 
@@ -135,8 +148,10 @@ class AdaptiveEpsGreedy(ModelBase):
 
 
 def get_model_by_string(string):
-    model_cls = {"lin": LinDecayEpsGreedy, "adaptive": AdaptiveEpsGreedy}.get(string, None)
-    print(f"Please enter values for the following parameters:\n")
+    model_cls = {"lin": LinDecayEpsGreedy,
+                 "adaptive": AdaptiveEpsGreedy,
+                 "simple": SimpleDecay}.get(string, None)
+    print(f"Please enter values for the following parameters:")
     args = []
     for arg in model_cls.__init__.__code__.co_varnames[1:]:
         args.append(float(input(f"{arg}: ")))
