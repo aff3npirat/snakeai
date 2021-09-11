@@ -68,3 +68,7 @@ def main(lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosity, save):
                               'lr': lr}.update(model.params)
             if save_string_to_file(params_to_save, root_dir / f"{agent_name}.yml"):
                 print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
+
+
+if __name__ == '__main__':
+    main()
