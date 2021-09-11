@@ -5,7 +5,6 @@ import numpy as np
 from src.base import ModelBase
 
 
-# Models
 class SimpleDecay(ModelBase):
 
     def __init__(self, eps):
@@ -65,86 +64,6 @@ class AdaptiveEpsGreedy(ModelBase):
                 self.k = 0
             return random.choice([0, 1, 2, 3])
         return greedy_action
-
-
-# Trainers
-# Monte Carlo
-# class FVMonteCarlo(TrainerBase):
-#
-#     def train_step(self, episode):
-#         self.model.n_games += 1
-#         self._fill_Q(episode)
-#         Q = self.model.Q
-#         visit_counter = self.model.state_action_counter
-#         G = 0
-#         for i in reversed(range(len(episode))):
-#             state, action, reward = episode[i]
-#             G = self.model.y * G + reward
-#             if (state, action) not in [(s, a) for s, a, _ in episode[:i]]:
-#                 if visit_counter[state][action] == 0:
-#                     Q[state][action] = G
-#                 else:
-#                     n = visit_counter[state][action]
-#                     Q[state][action] += (G-Q[state][action]) / (n+1)
-#                 visit_counter[state][action] += 1
-#
-#     def _fill_Q(self, episode):
-#         for s, _, _ in episode:
-#             if s not in self.model.Q:
-#                 self.model.Q[s] = [0.0, 0.0, 0.0, 0.0]
-#                 self.model.state_action_counter[s] = [0, 0, 0, 0]
-#
-#
-# class EVMonteCarlo(TrainerBase):
-#
-#     def train_step(self, episode):
-#         self.model.n_games += 1
-#         self._fill_Q(episode)
-#         Q = self.model.Q
-#         visit_counter = self.model.state_action_counter
-#         G = 0
-#         for i in reversed(range(len(episode))):
-#             state, action, reward = episode[i]
-#             G = self.model.y * G + reward
-#             if visit_counter[state][action] == 0:
-#                 Q[state][action] = G
-#             else:
-#                 n = visit_counter[state][action]
-#                 Q[state][action] += (G-Q[state][action]) / (n+1)
-#             visit_counter[state][action] += 1
-#
-#     def _fill_Q(self, episode):
-#         for s, _, _ in episode:
-#             if s not in self.model.Q:
-#                 self.model.Q[s] = [0.0, 0.0, 0.0, 0.0]
-#                 self.model.state_action_counter[s] = [0, 0, 0, 0]
-#
-#
-# class TDLambda(TrainerBase):
-#
-#     def __init__(self, model, lambda_, learning_rate):
-#         super().__init__(model)
-#         # keeps track of eligibility trace for every state-action pair
-#         self.E = {}
-#         self.k = lambda_
-#         self.lr = learning_rate
-#
-#     def train_step(self, time_step):
-#         state, action, reward, next_state = time_step
-#
-#         # update eligibility traces for all states
-#         if state not in self.E:
-#             self.E[state] = [0.0, 0.0, 0.0, 0.0]
-#         for key in self.E:
-#             if key == state:
-#                 self.E[state][action] = self.k * self.model.y * self.E[state][action] + 1
-#             else:
-#                 for i in range(4):
-#                     self.E[state][i] *= self.k * self.model.y
-#
-#         # update Q values
-#         error = reward + max(self.model.Q[next_state]) - self.model.Q[state][action]
-#         self.model.Q[state][action] += self.lr * self.E[state][action] * error
 
 
 def get_model_by_string(string):
