@@ -1,12 +1,15 @@
+import inspect
 from datetime import datetime
 from pathlib import Path
 
+from src.Q_models import get_model_by_string
+from src.agents import get_agent_class_by_string
 from src.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
     dict_to_string
 from src.snake_game import SnakeGame
 
 
-def main(gamma, only_first_visit, agent_name, w, h, n_episodes, verbosity, save):
+def main(agent_str, model_str, gamma, only_first_visit, agent_name, w, h, n_episodes, verbosity, save):
     root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
@@ -20,9 +23,8 @@ def main(gamma, only_first_visit, agent_name, w, h, n_episodes, verbosity, save)
         print(f"Loaded agent {agent_name}")
         model = agent.model
     else:
-        # TODO: choose agent and model
-        model = None
-        agent = None
+        model = get_model_by_string(model_str)
+        agent = get_agent_class_by_string(agent_str)(model)
         visit_counter = {}
 
     game = SnakeGame(w, h, agent_name)

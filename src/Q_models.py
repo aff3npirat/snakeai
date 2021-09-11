@@ -135,6 +135,10 @@ class AdaptiveEpsGreedy(ModelBase):
 #         self.model.Q[state][action] += self.lr * self.E[state][action] * error
 
 
-def get_model_by_str(string):
-    if string.contains('adaptive'):
-        return AdaptiveEpsGreedy
+def get_model_by_string(string):
+    model_cls = {"lin": LinDecayEpsGreedy, "adaptive": AdaptiveEpsGreedy}.get(string, None)
+    print(f"Please enter values for the following parameters:\n")
+    args = []
+    for arg in model_cls.__init__.__code__.co_varnames[1:]:
+        args.append(float(input(f"{arg}: ")))
+    return model_cls(*args)
