@@ -8,14 +8,14 @@ class AgentBase:
         raise NotImplementedError
 
 
-class TrainerBase:
-    """Trains a specific model."""
-
-    def __init__(self, model):
-        self.model = model
-
-    def train_step(self, episode):
-        raise NotImplementedError
+# class TrainerBase:
+#     """Trains a specific model."""
+#
+#     def __init__(self, model):
+#         self.model = model
+#
+#     def train_step(self, episode):
+#         raise NotImplementedError
 
 
 class ModelBase:
