@@ -103,7 +103,8 @@ class SnakeGame:
             state = agent.get_state(self)
             action = agent.model.get_action(state)
             done, reward = self.play_step(Direction(action), render_game)
-            episode.append((state, action, reward))
+            next_state = agent.get_state(self)
+            episode.append((state, action, reward, next_state))
         return episode, self.score
 
     def is_collision(self, point) -> bool:
