@@ -37,7 +37,6 @@ class AdaptiveEpsGreedy(ModelBase):
     def get_action(self, world_state):
         if world_state not in self.Q:
             self.Q[world_state] = [0.0, 0.0, 0.0, 0.0]
-            self.state_action_counter[world_state] = [0, 0, 0, 0]
 
         greedy_action = np.argmax(self.Q[world_state])
         if np.random.uniform(0, 1) <= self.eps:

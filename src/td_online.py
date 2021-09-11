@@ -56,6 +56,7 @@ def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, v
             # update Q values
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
             model.Q[state][action] += lr * E[state_action] * error
+        model.n_games += 1
 
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
@@ -63,17 +64,17 @@ def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, v
             print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
         if verbosity >= 1:
             plot(plot_scores, plot_mean_scores, agent_name)
-        # save
-        plot(plot_scores, plot_mean_scores, agent_name)
-        save_plot(root_dir / f"{agent_name}.png")
-        if save:
-            if save_to_binary_file([agent, E], root_dir / f"{agent_name}.pkl"):
-                print(f"Saved agent to '{root_dir / f'{agent_name}.pkl'}'")
-            params_to_save = {'lambda': lmbda,
-                              'discount': gamma,
-                              'lr': lr}.update(model.params)
-            if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
-                print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
+    # save
+    plot(plot_scores, plot_mean_scores, agent_name)
+    save_plot(root_dir / f"{agent_name}.png")
+    if save:
+        if save_to_binary_file([agent, E], root_dir / f"{agent_name}.pkl"):
+            print(f"Saved agent to '{root_dir / f'{agent_name}.pkl'}'")
+        params_to_save = {'lambda': lmbda,
+                          'discount': gamma,
+                          'lr': lr}.update(model.params)
+        if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
+            print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
 
 
 if __name__ == '__main__':
