@@ -141,7 +141,7 @@ class TDLambda(TrainerBase):
 
         # update Q values
         error = reward + max(self.model.Q[next_state]) - self.model.Q[state][action]
-        self.model.Q[state][action] += self.lr * error * self.E[state][action]
+        self.model.Q[state][action] += self.lr * self.E[state][action] * error
 
 
 str_to_trainer = {'first': FVMonteCarlo,
