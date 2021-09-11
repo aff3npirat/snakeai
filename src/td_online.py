@@ -1,3 +1,4 @@
+import click
 from datetime import datetime
 from pathlib import Path
 
@@ -8,7 +9,53 @@ from src.helper import read_from_binary_file, read_string_from_file, plot, save_
 from src.snake_game import SnakeGame
 
 
-def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosity, save):
+@click.command()
+@click.option("-a",
+              "--agent",
+              "agent_",
+              type=click.Choice(["QAgent"]),
+              help="Determines which agent to use.")
+@click.option("-m",
+              "--model",
+              "model_",
+              type=click.Choice(["lin", "adaptive", "simple"]),
+              help="Determines which model to use.")
+@click.option("-lr",
+              "lr",
+              type=float,
+              help="Learning rate.")
+@click.option("-l",
+              "--lambda",
+              "lmbda",
+              type=float,
+              help="")
+@click.option("-y",
+              "--gamma",
+              type=float,
+              help="Discount factor.")
+@click.option("--name",
+              "agent_name",
+              type=str,
+              help="Name of agent. If agent with same name exists he is loaded.")
+@click.option("-w",
+              type=int,
+              help="Number of tiles along x-axis.")
+@click.option("-h",
+              type=int,
+              help="Number of tiles along y-axis.")
+@click.option("-n",
+              "--n_episodes",
+              type=int,
+              help="Number of episodes to train.")
+@click.option("-v",
+              "verbosity",
+              count=True,
+              help="If passed at least once, plots will be outputed. If passed twice, game will be rendered.")
+@click.option("--save",
+              is_flag=True,
+              default=False,
+              help="If passed agent will be saved.")
+def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosity, save):
     root_dir = Path(__file__).parents[1] / Path("agents/td") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
@@ -26,8 +73,8 @@ def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, v
         print(f"Loaded agent {agent_name}")
         model = agent.model
     else:
-        model = get_model_by_string(model_str)
-        agent = get_agent_class_by_string(agent_str)(model)
+        model = get_model_by_string(model_)
+        agent = get_agent_class_by_string(agent_)(model)
         E = {}
 
     game = SnakeGame(w, h, agent_name)
@@ -54,6 +101,10 @@ def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, v
                     E[key] *= lmbda * gamma
 
             # update Q values
+            if state not in model.Q:
+                model.Q[state] = [0.0, 0.0, 0.0, 0.0]
+            if next_state not in model.Q:
+                model.Q[next_state] = [0.0, 0.0, 0.0, 0.0]
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
             model.Q[state][action] += lr * E[state_action] * error
         model.n_games += 1
@@ -72,7 +123,8 @@ def main(agent_str, model_str, lr, lmbda, gamma, agent_name, w, h, n_episodes, v
             print(f"Saved agent to '{root_dir / f'{agent_name}.pkl'}'")
         params_to_save = {'lambda': lmbda,
                           'discount': gamma,
-                          'lr': lr}.update(model.params)
+                          'lr': lr}
+        params_to_save.update(model.params)
         if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
             print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
 
