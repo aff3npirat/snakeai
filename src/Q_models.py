@@ -82,8 +82,7 @@ class FVMonteCarlo(TrainerBase):
                     Q[state][action] = G
                 else:
                     n = visit_counter[state][action]
-                    # Q[state][action] = (n/(n+1)) * (G/n + Q[state][action])
-                    Q[state][action] = Q[state][action] - (G-Q[state][action])/(n+1)
+                    Q[state][action] += (G-Q[state][action]) / (n+1)
                 visit_counter[state][action] += 1
 
     def _init_Q(self, episode):
@@ -108,8 +107,7 @@ class EVMonteCarlo(TrainerBase):
                 Q[state][action] = G
             else:
                 n = visit_counter[state][action]
-                # Q[state][action] = (n / (n + 1)) * (G / n + Q[state][action])
-                Q[state][action] = Q[state][action] - (G-Q[state][action]) / (n+1)
+                Q[state][action] += (G-Q[state][action]) / (n+1)
             visit_counter[state][action] += 1
 
     def _init_Q(self, episode):
