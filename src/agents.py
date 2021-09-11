@@ -50,4 +50,6 @@ class QAgent(AgentBase):
         return array_to_byte(state)
 
 
-str_to_agent = {'QAgent': QAgent}
+def get_agent_by_str(string):
+    return QAgent
+

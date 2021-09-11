@@ -85,7 +85,7 @@ class SnakeGame:
             self.body_position.pop()
 
         if len(self.body_position)+1 == self.x_tiles * self.y_tiles:
-            # reward += 15
+            reward += 15
             return [True, reward]
         if self.is_collision(self.head_position) or self.n_steps == (len(self.body_position)+1) * 100:
             reward -= 10

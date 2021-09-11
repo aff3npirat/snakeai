@@ -144,6 +144,6 @@ class TDLambda(TrainerBase):
         self.model.Q[state][action] += self.lr * self.E[state][action] * error
 
 
-str_to_trainer = {'first': FVMonteCarlo,
-                  'every': EVMonteCarlo,
-                  'lambda': TDLambda}
+def get_model_by_str(string):
+    if string.contains('adaptive'):
+        return AdaptiveEpsGreedy
