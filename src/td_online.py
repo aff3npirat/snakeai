@@ -6,7 +6,7 @@ from src.Q_models import get_model_by_string
 from src.agents import get_agent_class_by_string
 from src.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
     dict_to_string
-from src.snake_game import SnakeGame
+from src.snake_game import SnakeGame, Direction
 
 
 @click.command()
@@ -84,11 +84,10 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
         game.reset()
         state = agent.get_state(game)
         done = False
-        updates = {}
         while not done:
             # play step
             action = model.get_action(state)
-            done, reward = game.play_step(action, verbosity>=2)
+            done, reward = game.play_step(Direction(action), verbosity>=2)
             next_state = agent.get_state(game)
 
             # update eligibility traces
@@ -108,13 +107,9 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
                 model.Q[next_state] = [0.0, 0.0, 0.0, 0.0]
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
             for key in model.Q:
-                updates[key] = [model.Q[key][i] + lr * E[key][i] * error for i in range(4)]
-            # for key in model.Q:
-            #     for i in [0, 1, 2, 3]:
-            #         model.Q[key][i] += lr * E[key][i] * error
-
+                for i in [0, 1, 2, 3]:
+                    model.Q[key][i] += lr * E[key][i] * error
             state = next_state
-        model.Q.update(updates)
         model.n_games += 1
 
         plot_scores.append(game.score)
