@@ -98,8 +98,8 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
             for key in E:
                 for i in [0, 1, 2, 3]:
                     E[key][i] *= lmbda * gamma
-                    if state == key and action == i:
-                        E[state][action] += 1
+            E[state][action] += 1
+
             # update Q values
             if state not in model.Q:
                 model.Q[state] = [0.0, 0.0, 0.0, 0.0]
