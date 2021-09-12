@@ -84,6 +84,7 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
         game.reset()
         state = agent.get_state(game)
         done = False
+        updates = {}
         while not done:
             # play step
             action = model.get_action(state)
@@ -107,10 +108,13 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
                 model.Q[next_state] = [0.0, 0.0, 0.0, 0.0]
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
             for key in model.Q:
-                for i in [0, 1, 2, 3]:
-                    model.Q[key][i] += lr * E[key][i] * error
+                updates[key] = [model.Q[key][i] + lr * E[key][i] * error for i in range(4)]
+            # for key in model.Q:
+            #     for i in [0, 1, 2, 3]:
+            #         model.Q[key][i] += lr * E[key][i] * error
 
             state = next_state
+        model.Q.update(updates)
         model.n_games += 1
 
         plot_scores.append(game.score)
