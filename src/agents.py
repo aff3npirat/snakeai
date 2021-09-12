@@ -50,6 +50,15 @@ class QAgent(AgentBase):
         return array_to_byte(state)
 
 
+class MarkovAgent(AgentBase):
+
+    def get_state(self, game):
+        state = [[0, 0] for _ in range(game.x_tiles * game.y_tiles)]
+        state[0] = [pos // TILE_SIZE]
+        for pos in game.body_position: pass
+
+
+
 def get_agent_class_by_string(string):
     return {"QAgent": QAgent}.get(string, None)
 

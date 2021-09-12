@@ -31,9 +31,9 @@ class SnakeGame:
         pygame.init()
         pygame.display.set_caption(window_name)
         self.direction = Direction.RIGHT
-        self.head_position = None
-        self.body_position = None
-        self.food_position = None
+        self.head_position = []
+        self.body_position = []
+        self.food_position = []
         self.score = 0
         self.n_steps = 0
         self.reset()
@@ -80,7 +80,7 @@ class SnakeGame:
         if self.head_position == self.food_position:
             self.score += 1
             reward += 10
-            self.food_position = [random.randrange(1, self.x_tiles) * 10, random.randrange(1, self.y_tiles) * 10]
+            self.food_position = [random.randrange(1, self.x_tiles) * TILE_SIZE, random.randrange(1, self.y_tiles) * TILE_SIZE]
         else:
             self.body_position.pop()
 
