@@ -53,12 +53,17 @@ class QAgent(AgentBase):
 class MarkovAgent(AgentBase):
 
     def get_state(self, game):
-        state = [[0, 0] for _ in range(game.x_tiles * game.y_tiles)]
-        state[0] = [pos // TILE_SIZE]
-        for pos in game.body_position: pass
-
+        state = [[-1, -1] for _ in range(game.x_tiles * game.y_tiles + 1)]
+        state[0] = [game.food_position[0] // TILE_SIZE, game.food_position[1] // TILE_SIZE]
+        state[1] = [game.head_position[0] // TILE_SIZE, game.head_position[1] // TILE_SIZE]
+        i = 2
+        for pos in game.body_position:
+            state[i] = [pos[0] // TILE_SIZE, pos[1] // TILE_SIZE]
+            i += 1
+        return state
 
 
 def get_agent_class_by_string(string):
-    return {"QAgent": QAgent}.get(string, None)
+    return {"QAgent": QAgent,
+            "markov": MarkovAgent}.get(string, None)
 
