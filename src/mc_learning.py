@@ -88,7 +88,7 @@ def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, 
             if state not in visit_counter:
                 visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
 
-            if not only_first_visit or (state, action) in [(s, a) for s, a, _ in episode[0:i]]:
+            if not only_first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
                 visit_counter[state][action] += 1
                 model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
         model.n_games += 1

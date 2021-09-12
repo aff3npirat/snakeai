@@ -82,23 +82,22 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
     plot_mean_scores = []
     for k in range(1, n_episodes + 1):
         game.reset()
+        state = agent.get_state(game)
         done = False
         while not done:
             # play step
-            state = agent.get_state(game)
             action = model.get_action(state)
             done, reward = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
 
             # update eligibility traces
-            state_action = (state, action)
-            if state_action not in E:
-                E[state_action] = 0.0
+            if state not in E:
+                E[state] = [0.0, 0.0, 0.0, 0.0]
             for key in E:
-                if key == state_action:
-                    E[state_action] = lmbda * gamma * E[state_action] + 1
-                else:
-                    E[key] *= lmbda * gamma
+                for i in [0, 1, 2, 3]:
+                    E[key][i] *= lmbda * gamma
+                    if state == key and action == i:
+                        E[state][action] += 1
 
             # update Q values
             if state not in model.Q:
@@ -106,7 +105,9 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
             if next_state not in model.Q:
                 model.Q[next_state] = [0.0, 0.0, 0.0, 0.0]
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
-            model.Q[state][action] += lr * E[state_action] * error
+            model.Q[state][action] += lr * E[state][action] * error
+
+            state = next_state
         model.n_games += 1
 
         plot_scores.append(game.score)
