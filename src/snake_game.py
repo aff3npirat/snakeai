@@ -18,7 +18,7 @@ BLUE = pygame.Color(0, 0, 255)
 
 TILE_SIZE = 10
 SNAKE_SIZE = 8
-SPEED = 10
+SPEED = 30
 
 
 class SnakeGame:
