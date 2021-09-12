@@ -93,19 +93,22 @@ def main(agent_, model_, lr, lmbda, gamma, agent_name, w, h, n_episodes, verbosi
             # update eligibility traces
             if state not in E:
                 E[state] = [0.0, 0.0, 0.0, 0.0]
+            if next_state not in E:
+                E[next_state] = [0.0, 0.0, 0.0, 0.0]
             for key in E:
                 for i in [0, 1, 2, 3]:
                     E[key][i] *= lmbda * gamma
                     if state == key and action == i:
                         E[state][action] += 1
-
             # update Q values
             if state not in model.Q:
                 model.Q[state] = [0.0, 0.0, 0.0, 0.0]
             if next_state not in model.Q:
                 model.Q[next_state] = [0.0, 0.0, 0.0, 0.0]
             error = reward + gamma * max(model.Q[next_state]) - model.Q[state][action]
-            model.Q[state][action] += lr * E[state][action] * error
+            for key in model.Q:
+                for i in [0, 1, 2, 3]:
+                    model.Q[key][i] += lr * E[key][i] * error
 
             state = next_state
         model.n_games += 1
