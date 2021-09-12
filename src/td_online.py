@@ -13,7 +13,7 @@ from src.snake_game import SnakeGame, Direction
 @click.option("-a",
               "--agent",
               "agent_",
-              type=click.Choice(["QAgent"]),
+              type=click.Choice(["QAgent", "markov"]),
               help="Determines which agent to use.")
 @click.option("-m",
               "--model",

@@ -79,12 +79,12 @@ def array_to_byte(arr):
     return byte
 
 
-def dict_to_string(dict, sep="\n"):
+def dict_to_string(dict_, sep="\n"):
     """Converts dictionary to string.
 
     Each dictionary entry is converted as 'key: value' followed by seperator (sep).
     """
     as_string = ""
-    for key in dict:
-        as_string += str(key) + ": " + str(dict[key]) + sep
+    for key in dict_:
+        as_string += str(key) + ": " + str(dict_[key]) + sep
     return as_string
