@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import List, Union
 import pygame
 import random
 
@@ -19,7 +18,7 @@ BLUE = pygame.Color(0, 0, 255)
 
 TILE_SIZE = 10
 SNAKE_SIZE = 8
-SPEED = 30
+SPEED = 10
 
 
 class SnakeGame:

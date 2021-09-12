@@ -6,14 +6,15 @@ from src.snake_game import SnakeGame, Direction
 
 @click.command()
 @click.option("-w",
-              type=float)
+              type=int)
 @click.option("-h",
-              type=float)
+              type=int)
 def main(w, h):
     game = SnakeGame(w, h, "Snake")
     done = False
 
     while not done:
+        action = game.direction.value
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
@@ -25,7 +26,7 @@ def main(w, h):
                 elif event.key == pygame.K_RIGHT:
                     action = 3
 
-        game.play_step(Direction(action))
+        done, _ = game.play_step(Direction(action), True)
     input()
 
 
