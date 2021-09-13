@@ -46,6 +46,7 @@ def main(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, sav
             model.Q[state][action] += lr * delta
             state = next_state
             action = next_action
+        agent.model.n_games += 1
 
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
@@ -62,3 +63,7 @@ def main(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, sav
         params_to_save.update(model.params)
         if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
             print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
+
+
+if __name__ == '__main__':
+    main("QAgent", "simple", 0.1, 1.0, 10000, 20, 20, "test", 0, True)
