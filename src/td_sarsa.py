@@ -19,6 +19,7 @@ def main(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, sav
                 lr = float(value)
             elif name == "discount":
                 gamma = float(value)
+        print(f"Loaded agent {agent_name}")
     else:
         model = get_model_by_string(model_)
         agent = get_agent_class_by_string(agent_)(model)
