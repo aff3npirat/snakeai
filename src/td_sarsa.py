@@ -52,7 +52,7 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
             model = agent.model
             plot_mean_scores[-1].append(sum(scores) / len(scores))
     game.quit()
-    
+
     plt.ioff()
     plt.clf()
     plt.xlabel("gamma")
@@ -64,7 +64,7 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
     plt.show()
 
 
-def td_sarsa(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, save):
+def td_sarsa(agent_, model_, lr, gamma,  agent_name, w, h, n_episodes, verbosity=0, save=False):
     root_dir = Path(__file__).parents[1] / f"agents/td_sarsa/{agent_name}"
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent = read_from_binary_file(root_dir / f"{agent_name}.pkl")
@@ -105,4 +105,4 @@ def td_sarsa(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity,
 
 
 if __name__ == '__main__':
-    td_sarsa("QAgent", "simple", )
+    td_sarsa("QAgent", "simple", 0.3, 1.0, "test_sarsa", 20, 20, 10000, save=True)

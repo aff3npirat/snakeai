@@ -8,7 +8,26 @@ from src.helper import read_from_binary_file, read_string_from_file, plot, save_
 from src.snake_game import SnakeGame
 
 
-def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, verbosity, save):
+def train_step(agent, model, game, visit_counter, gamma, only_first_visit, verbosity):
+    episode, score = game.play_episode(agent, verbosity>=2)
+
+    G = 0
+    for i in reversed(range(len(episode))):
+        state, action, reward = episode[i]
+        G = gamma * G + reward
+
+        if state not in model.Q:
+            model.Q[state] = [0.0, 0.0, 0.0, 0.0]
+        if state not in visit_counter:
+            visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
+
+        if not only_first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
+            visit_counter[state][action] += 1
+            model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
+    model.n_games += 1
+
+
+def mc_learning(agent_, model_, only_first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
     root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
@@ -32,23 +51,7 @@ def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, 
     for k in range(1, n_episodes + 1):
         # play episode
         game.reset()
-        episode, score = game.play_episode(agent, verbosity>=2)
-
-        # update Q values
-        G = 0
-        for i in reversed(range(len(episode))):
-            state, action, reward = episode[i]
-            G = gamma * G + reward
-
-            if state not in model.Q:
-                model.Q[state] = [0.0, 0.0, 0.0, 0.0]
-            if state not in visit_counter:
-                visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
-
-            if not only_first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
-                visit_counter[state][action] += 1
-                model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
-        model.n_games += 1
+        train_step(agent, model, game, visit_counter, gamma, only_first_visit, verbosity)
 
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
@@ -69,5 +72,5 @@ def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, 
 
 
 if __name__ == '__main__':
-    main("QAgent", )
+    mc_learning("QAgent", "simple", False, 1.0, "test_mc", 20, 20, 10000, save=True)
 
