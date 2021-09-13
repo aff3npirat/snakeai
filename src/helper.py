@@ -2,10 +2,9 @@ import pickle
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-plt.ion()
-
 
 def plot(scores, mean_scores, plot_name=""):
+    plt.ion()
     plt.clf()
     plt.title(plot_name)
     plt.xlabel('n_games')
