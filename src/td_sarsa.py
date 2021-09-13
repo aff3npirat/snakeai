@@ -51,7 +51,8 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
             agent = new_agent
             model = agent.model
             plot_mean_scores[-1].append(sum(scores) / len(scores))
-
+    game.quit()
+    
     plt.ioff()
     plt.clf()
     plt.xlabel("gamma")
@@ -101,3 +102,7 @@ def td_sarsa(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity,
         params_to_save.update(model.params)
         if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
             print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
+
+
+if __name__ == '__main__':
+    td_sarsa("QAgent", "simple", )

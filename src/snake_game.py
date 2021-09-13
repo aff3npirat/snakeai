@@ -121,3 +121,6 @@ class SnakeGame:
             pygame.draw.rect(self.game_window, GREEN, pygame.Rect(*pos, SNAKE_SIZE, SNAKE_SIZE))
         pygame.draw.rect(self.game_window, WHITE, pygame.Rect(self.food_position[0], self.food_position[1], TILE_SIZE, TILE_SIZE))
         pygame.display.update()
+
+    def quit(self):
+        pygame.quit()

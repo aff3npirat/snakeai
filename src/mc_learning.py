@@ -1,4 +1,3 @@
-import click
 from datetime import datetime
 from pathlib import Path
 
@@ -9,48 +8,6 @@ from src.helper import read_from_binary_file, read_string_from_file, plot, save_
 from src.snake_game import SnakeGame
 
 
-@click.command()
-@click.option("-a",
-              "--agent",
-              "agent_",
-              type=click.Choice(["QAgent"]),
-              help="Determines which agent to use.")
-@click.option("-m",
-              "--model",
-              "model_",
-              type=click.Choice(["lin", "adaptive", "simple"]),
-              help="Determines which model to use.")
-@click.option("-y",
-              "--gamma",
-              type=float,
-              help="Discount factor.")
-@click.option("--every",
-              "only_first_visit",
-              is_flag=True,
-              default=True,
-              help="If passed every visit monte carlo is used.")
-@click.option("--name",
-              "agent_name",
-              type=str,
-              help="Name of agent. If agent with same name exists he is loaded.")
-@click.option("-w",
-              type=int,
-              help="Number of tiles along x-axis.")
-@click.option("-h",
-              type=int,
-              help="Number of tiles along y-axis.")
-@click.option("-n",
-              "--n_episodes",
-              type=int,
-              help="Number of episodes to train.")
-@click.option("-v",
-              "verbosity",
-              count=True,
-              help="If passed at least once, plots will be outputed. If passed twice, game will be rendered.")
-@click.option("--save",
-              is_flag=True,
-              default=False,
-              help="If passed agent will be saved.")
 def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, verbosity, save):
     root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
     # load agent (if existing)
@@ -112,5 +69,5 @@ def main(agent_, model_, gamma, only_first_visit, agent_name, w, h, n_episodes, 
 
 
 if __name__ == '__main__':
-    main()
+    main("QAgent", )
 
