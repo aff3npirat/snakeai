@@ -1,15 +1,15 @@
-from src.base import AgentBase
-from src.helper import array_to_byte
-from src.snake_game import Direction, TILE_SIZE, SnakeGame
+from base import AgentBase
+from helper import array_to_byte
+from snake_game import TILE_SIZE
 
 
 class QAgent(AgentBase):
 
-    def get_state(self, game: SnakeGame):
-        dir_u = game.direction == Direction.UP
-        dir_d = game.direction == Direction.DOWN
-        dir_l = game.direction == Direction.LEFT
-        dir_r = game.direction == Direction.RIGHT
+    def get_state(self, game):
+        dir_u = game.direction.value == 0  # Direction.UP
+        dir_d = game.direction.value == 1  # Direction.DOWN
+        dir_l = game.direction.value == 2  # Direction.LEFT
+        dir_r = game.direction.value == 3  # Direction.RIGHT
 
         pos_u = [game.head_position[0], game.head_position[1] - TILE_SIZE]
         pos_d = [game.head_position[0], game.head_position[1] + TILE_SIZE]

@@ -7,7 +7,7 @@ from src.agents import get_agent_class_by_string
 from src.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
     dict_to_string
 from src.snake_game import SnakeGame, Direction
-from src.q_models import get_model_by_string
+from src.models import get_model_by_string
 
 
 def train_step(agent, model, game, lr, gamma, verbosity):
@@ -62,7 +62,7 @@ def evaluate_params(agent, lrs, gammas, w, h, n=1000, plot_name="eval_lr_gamma")
 
 
 def td_sarsa(agent_, model_, lr, gamma,  agent_name, w, h, n_episodes, verbosity=0, save=False):
-    root_dir = Path(__file__).parents[1] / f"agents/td_sarsa/{agent_name}"
+    root_dir = Path(__file__).parents[1] / f"agent/td_sarsa/{agent_name}"
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent = read_from_binary_file(root_dir / f"{agent_name}.pkl")
         model = agent.model

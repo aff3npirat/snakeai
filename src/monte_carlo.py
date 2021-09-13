@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from pathlib import Path
 
-from src.q_models import get_model_by_string
 from src.agents import get_agent_class_by_string
+from src.models import get_model_by_string
 from src.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
     dict_to_string
 from src.snake_game import SnakeGame
@@ -55,7 +55,7 @@ def train_step(agent, model, game, visit_counter, gamma, first_visit, verbosity)
 
 
 def mc_learning(agent_, model_, first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
-    root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
+    root_dir = Path(__file__).parents[1] / Path("agent/monte_carlo") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent, visit_counter = read_from_binary_file(root_dir / f"{agent_name}.pkl")
