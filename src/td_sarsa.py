@@ -58,7 +58,7 @@ def evaluate_params(agent, lrs, gammas, w, h, n=1000, plot_name="eval_lr_gamma")
         plt.plot(gammas, plot_mean_scores[i], label=f"lr={round(lrs[i], ndigits=2)}")
     plt.legend(loc="upper right")
     plt.savefig(Path(__file__).parents[1] / f"plots/td_sarsa/{plot_name}.png")
-    plt.show()
+    # plt.show()
 
 
 def td_sarsa(agent_, model_, lr, gamma,  agent_name, w, h, n_episodes, verbosity=0, save=False):

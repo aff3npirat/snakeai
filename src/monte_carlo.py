@@ -51,7 +51,7 @@ def evaluate_params(agent, first_visit, gammas, w, h, n=1000, plot_name="eval_ga
     plt.ylabel("mean_score")
     plt.plot(gammas, plot_mean_scores)
     plt.savefig(Path(__file__).parents[1] / f"plots/monte_carlo/{plot_name}.png")
-    plt.show()
+    # plt.show()
 
 
 def mc_learning(agent_, model_, first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
