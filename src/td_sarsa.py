@@ -1,5 +1,4 @@
 import copy
-import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from pathlib import Path
@@ -33,20 +32,18 @@ def train_step(agent, model, game, lr, gamma, verbosity):
     agent.model.n_games += 1
 
 
-def evaluate_params(agent_, model_, w, h):
+def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
     model = get_model_by_string(model_)
     agent = get_agent_class_by_string(agent_)(model)
     new_agent = copy.deepcopy(agent)
     game = SnakeGame(w, h, "evaluate")
 
-    lrs = np.linspace(0.1, 1, 10)
-    gammas = np.linspace(0.1, 1, 10)
     plot_mean_scores = []
     for lr in lrs:
         plot_mean_scores.append([])
         for gamma in gammas:
             scores = []
-            for k in range(1000):
+            for k in range(n):
                 game.reset()
                 train_step(agent, model, game, lr, gamma, 0)
                 scores.append(game.score)
@@ -61,12 +58,12 @@ def evaluate_params(agent_, model_, w, h):
     plt.ylabel("mean_score")
     for i in range(len(lrs)):
         plt.plot(gammas, plot_mean_scores[i], label=f"lr={round(lrs[i], ndigits=2)}")
-    plt.legend(loc="top right")
+    plt.legend(loc="upper right")
     plt.savefig(Path(__file__).parents[1] / f"agents/td_sarsa/{agent_}_{model_}.png")
     plt.show()
 
 
-def main(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, save):
+def td_sarsa(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, save):
     root_dir = Path(__file__).parents[1] / f"agents/td_sarsa/{agent_name}"
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent = read_from_binary_file(root_dir / f"{agent_name}.pkl")
@@ -104,8 +101,3 @@ def main(agent_, model_, lr, gamma, n_episodes, w, h, agent_name, verbosity, sav
         params_to_save.update(model.params)
         if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
             print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
-
-
-if __name__ == '__main__':
-    #main("QAgent", "simple", 0.1, 1.0, 10000, 20, 20, "test", 0, True)
-    evaluate_params("QAgent", "simple", 20, 20)
