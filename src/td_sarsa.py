@@ -62,7 +62,7 @@ def evaluate_params(agent, lrs, gammas, w, h, n=1000, plot_name="eval_lr_gamma")
 
 
 def td_sarsa(agent_, model_, lr, gamma,  agent_name, w, h, n_episodes, verbosity=0, save=False):
-    root_dir = Path(__file__).parents[1] / f"agent/td_sarsa/{agent_name}"
+    root_dir = Path(__file__).parents[1] / f"agents/td_sarsa/{agent_name}"
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent = read_from_binary_file(root_dir / f"{agent_name}.pkl")
         model = agent.model

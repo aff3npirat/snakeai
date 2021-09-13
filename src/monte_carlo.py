@@ -10,6 +10,24 @@ from src.helper import read_from_binary_file, read_string_from_file, plot, save_
 from src.snake_game import SnakeGame
 
 
+def train_step(agent, model, game, visit_counter, gamma, first_visit, verbosity):
+    episode, score = game.play_episode(agent, verbosity>=2)
+    G = 0
+    for i in reversed(range(len(episode))):
+        state, action, reward = episode[i]
+        G = gamma * G + reward
+
+        if state not in model.Q:
+            model.Q[state] = [0.0, 0.0, 0.0, 0.0]
+        if state not in visit_counter:
+            visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
+
+        if not first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
+            visit_counter[state][action] += 1
+            model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
+    model.n_games += 1
+
+
 def evaluate_params(agent, first_visit, gammas, w, h, n=1000, plot_name="eval_gamma"):
     agent_ = copy.deepcopy(agent)
     game = SnakeGame(w, h, "evaluate_mc")
@@ -36,26 +54,8 @@ def evaluate_params(agent, first_visit, gammas, w, h, n=1000, plot_name="eval_ga
     plt.show()
 
 
-def train_step(agent, model, game, visit_counter, gamma, first_visit, verbosity):
-    episode, score = game.play_episode(agent, verbosity>=2)
-    G = 0
-    for i in reversed(range(len(episode))):
-        state, action, reward = episode[i]
-        G = gamma * G + reward
-
-        if state not in model.Q:
-            model.Q[state] = [0.0, 0.0, 0.0, 0.0]
-        if state not in visit_counter:
-            visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
-
-        if not first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
-            visit_counter[state][action] += 1
-            model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
-    model.n_games += 1
-
-
 def mc_learning(agent_, model_, first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
-    root_dir = Path(__file__).parents[1] / Path("agent/monte_carlo") / agent_name
+    root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
         agent, visit_counter = read_from_binary_file(root_dir / f"{agent_name}.pkl")
