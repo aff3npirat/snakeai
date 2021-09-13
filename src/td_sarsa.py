@@ -59,7 +59,7 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
     for i in range(len(lrs)):
         plt.plot(gammas, plot_mean_scores[i], label=f"lr={round(lrs[i], ndigits=2)}")
     plt.legend(loc="upper right")
-    plt.savefig(Path(__file__).parents[1] / f"agents/td_sarsa/{agent_}_{model_}.png")
+    plt.savefig(Path(__file__).parents[1] / f"agents/td_sarsa/{agent_}_{model_}_{n}.png")
     plt.show()
 
 
