@@ -32,11 +32,9 @@ def train_step(agent, model, game, lr, gamma, verbosity):
     agent.model.n_games += 1
 
 
-def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
-    model = get_model_by_string(model_)
-    agent = get_agent_class_by_string(agent_)(model)
-    new_agent = copy.deepcopy(agent)
-    game = SnakeGame(w, h, "evaluate")
+def evaluate_params(agent, lrs, gammas, w, h, n=1000, plot_name="eval_lr_gamma"):
+    agent_ = copy.deepcopy(agent)
+    game = SnakeGame(w, h, "evaluate_sarsa")
 
     plot_mean_scores = []
     for lr in lrs:
@@ -45,11 +43,10 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
             scores = []
             for k in range(n):
                 game.reset()
-                train_step(agent, model, game, lr, gamma, 0)
+                train_step(agent_, agent_.model, game, lr, gamma, 0)
                 scores.append(game.score)
             # reset agent and model
-            agent = new_agent
-            model = agent.model
+            agent_ = copy.deepcopy(agent)
             plot_mean_scores[-1].append(sum(scores) / len(scores))
     game.quit()
 
@@ -60,7 +57,7 @@ def evaluate_params(agent_, model_, lrs, gammas, w, h, n=1000):
     for i in range(len(lrs)):
         plt.plot(gammas, plot_mean_scores[i], label=f"lr={round(lrs[i], ndigits=2)}")
     plt.legend(loc="upper right")
-    plt.savefig(Path(__file__).parents[1] / f"agents/td_sarsa/{agent_}_{model_}_{n}.png")
+    plt.savefig(Path(__file__).parents[1] / f"plots/td_sarsa/{plot_name}.png")
     plt.show()
 
 

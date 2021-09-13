@@ -1,3 +1,5 @@
+import copy
+import matplotlib.pyplot as plt
 from datetime import datetime
 from pathlib import Path
 
@@ -8,9 +10,34 @@ from src.helper import read_from_binary_file, read_string_from_file, plot, save_
 from src.snake_game import SnakeGame
 
 
-def train_step(agent, model, game, visit_counter, gamma, only_first_visit, verbosity):
-    episode, score = game.play_episode(agent, verbosity>=2)
+def evaluate_params(agent, first_visit, gammas, w, h, n=1000, plot_name="eval_gamma"):
+    agent_ = copy.deepcopy(agent)
+    game = SnakeGame(w, h, "evaluate_mc")
+    visit_counter = {}
 
+    plot_mean_scores = []
+    for gamma in gammas:
+        scores = []
+        for k in range(n):
+            game.reset()
+            train_step(agent_, agent_.model, game, visit_counter, first_visit, gamma, 0)
+            scores.append(game.score)
+        agent_ = copy.deepcopy(agent)
+        visit_counter = {}
+        plot_mean_scores.append(sum(scores) / len(scores))
+    game.quit()
+
+    plt.ioff()
+    plt.clf()
+    plt.xlabel("gamma")
+    plt.ylabel("mean_score")
+    plt.plot(gammas, plot_mean_scores)
+    plt.savefig(Path(__file__).parents[1] / f"plots/monte_carlo/{plot_name}.png")
+    plt.show()
+
+
+def train_step(agent, model, game, visit_counter, gamma, first_visit, verbosity):
+    episode, score = game.play_episode(agent, verbosity>=2)
     G = 0
     for i in reversed(range(len(episode))):
         state, action, reward = episode[i]
@@ -21,13 +48,13 @@ def train_step(agent, model, game, visit_counter, gamma, only_first_visit, verbo
         if state not in visit_counter:
             visit_counter[state] = [0.0, 0.0, 0.0, 0.0]
 
-        if not only_first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
+        if not first_visit or (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
             visit_counter[state][action] += 1
             model.Q[state][action] += (G - model.Q[state][action]) / visit_counter[state][action]
     model.n_games += 1
 
 
-def mc_learning(agent_, model_, only_first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
+def mc_learning(agent_, model_, first_visit, gamma, agent_name, w, h, n_episodes, verbosity=0, save=False):
     root_dir = Path(__file__).parents[1] / Path("agents/monte_carlo") / agent_name
     # load agent (if existing)
     if (root_dir / f"{agent_name}.pkl").is_file():
@@ -49,9 +76,8 @@ def mc_learning(agent_, model_, only_first_visit, gamma, agent_name, w, h, n_epi
     plot_scores = []
     plot_mean_scores = []
     for k in range(1, n_episodes + 1):
-        # play episode
         game.reset()
-        train_step(agent, model, game, visit_counter, gamma, only_first_visit, verbosity)
+        train_step(agent, model, game, visit_counter, gamma, first_visit, verbosity)
 
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
