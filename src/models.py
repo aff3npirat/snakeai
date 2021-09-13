@@ -5,7 +5,7 @@ import numpy as np
 from src.base import ModelBase
 
 
-class SimpleDecay(ModelBase):
+class SimpleEpsDecay(ModelBase):
 
     def __init__(self, eps):
         super().__init__(eps=eps, n_games=0)
@@ -18,7 +18,7 @@ class SimpleDecay(ModelBase):
         return np.argmax(self.Q[world_state])
 
 
-class LinDecayEpsGreedy(ModelBase):
+class LinEpsDecay(ModelBase):
     """Chance of doing random action decreases linear with number of games played."""
 
     def __init__(self, eps, m):
@@ -33,7 +33,7 @@ class LinDecayEpsGreedy(ModelBase):
         return np.argmax(self.Q[world_state])
 
 
-class AdaptiveEpsGreedy(ModelBase):
+class AdaptiveEps(ModelBase):
     """Implementation based on 'Adaptive implementation of e-greedy in Reinforcment Learning' (Dos Santos Mignon, 2017).
 
     For readability purposes parameter l is replaced with p.
@@ -67,9 +67,9 @@ class AdaptiveEpsGreedy(ModelBase):
 
 
 def get_model_by_string(string):
-    model_cls = {"lin": LinDecayEpsGreedy,
-                 "adaptive": AdaptiveEpsGreedy,
-                 "simple": SimpleDecay}.get(string, None)
+    model_cls = {"lin": LinEpsDecay,
+                 "adaptive": AdaptiveEps,
+                 "simple": SimpleEpsDecay}.get(string, None)
     print(f"Please enter values for the following parameters:")
     args = []
     for arg in model_cls.__init__.__code__.co_varnames[1:]:
