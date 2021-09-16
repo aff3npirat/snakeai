@@ -1,7 +1,7 @@
 import click
 import pygame
 
-from src.snake_game import SnakeGame, Direction
+from snakeai.snake_game import SnakeGame, Direction
 
 
 @click.command()

@@ -2,7 +2,7 @@ import math
 import random
 import numpy as np
 
-from src.base import ModelBase
+from snakeai.base import ModelBase
 
 
 class SimpleEpsDecay(ModelBase):

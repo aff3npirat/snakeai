@@ -1,6 +1,6 @@
 import pygame
 
-from src.snake_game import SnakeGame, Direction, TILE_SIZE
+from snakeai.snake_game import SnakeGame, Direction, TILE_SIZE
 
 
 class NaiveAgent:

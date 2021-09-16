@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 from pathlib import Path
 
-from src.agents import get_agent_class_by_string
-from src.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
+from snakeai.agents import get_agent_class_by_string
+from snakeai.helper import read_from_binary_file, read_string_from_file, plot, save_plot, save_to_binary_file, save_string_to_file, \
     dict_to_string
-from src.snake_game import SnakeGame, Direction
-from src.models import get_model_by_string
+from snakeai.snake_game import SnakeGame, Direction
+from snakeai.models import get_model_by_string
 
 
 def train_step(agent, model, game, lr, gamma, verbosity):
