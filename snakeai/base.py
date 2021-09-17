@@ -1,10 +1,10 @@
 class AgentBase:
     """Captures environment in states."""
 
-    def __init__(self, model):
-        self.model = model
-
     def get_state(self, game):
+        raise NotImplementedError
+
+    def get_action(self, state):
         raise NotImplementedError
 
 

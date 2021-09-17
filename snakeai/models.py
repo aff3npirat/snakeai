@@ -7,17 +7,47 @@ from tensorflow.keras import layers
 from snakeai.base import ModelBase
 
 
+class TDTrainer:
+
+    def __init__(self, model, lr, gamma):
+        self.model = model
+        self.lr = lr
+        self.gamma = gamma
+
+    def train_step(self, state, action, reward, next_state, next_action):
+        target = reward + self.gamma * self.model.Q[next_state][next_action]
+        delta = target - self.model.Q[state][action]
+        self.model.Q[state][action] += self.lr * delta
+
+
+class FVMCTrainer:
+
+    def __init__(self, model, gamma, visit_counter):
+        self.model = model
+        self.gamma = gamma
+        self.visit_counter = visit_counter
+
+    def train_step(self, episode):
+        G = 0
+        for i in reversed(range(len(episode))):
+            state, action, reward = episode[i]
+            G = self.gamma * G + reward
+
+            if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
+                self.visit_counter[state][action] += 1
+                self.model.Q[state][action] += (G - self.model.Q[state][action]) / self.visit_counter[state][action]
+
+
 class SimpleEpsDecay(ModelBase):
 
     def __init__(self, eps):
         super().__init__(eps=eps, n_games=0)
-        self.Q = {}
 
-    def get_action(self, world_state):
+    def get_action(self, world_state, Q):
         k = (self.n_games + 1) / 100
-        if random.random() < self.eps/k or world_state not in self.Q:
+        if random.random() < self.eps/k or world_state not in Q:
             return random.choice([0, 1, 2, 3])
-        return np.argmax(self.Q[world_state])
+        return np.argmax(Q[world_state])
 
 
 class LinEpsDecay(ModelBase):

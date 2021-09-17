@@ -1,7 +1,9 @@
-from base import AgentBase
-from helper import array_to_byte
-from snake_game import TILE_SIZE
-from snakeai.models import AdaptiveEps, TDTrainer
+from pathlib import Path
+
+from snakeai.base import AgentBase
+from snakeai.helper import array_to_byte
+from snakeai.models import TDTrainer, AdaptiveEps
+from snakeai.snake_game import TILE_SIZE, SnakeGame
 
 
 class AdaptiveAgent(AgentBase):
@@ -9,6 +11,9 @@ class AdaptiveAgent(AgentBase):
     def __init__(self, eps, p, f, lr, gamma):
         self.model = AdaptiveEps(eps, p, f)
         self.trainer = TDTrainer(self.model, lr, gamma)
+
+    def train_step(self, state, action, reward, next_state, next_action):
+        self.trainer.train_step(state, action, next_state, reward, next_action)
 
     def get_action(self, state):
         return self.model.get_action(state)
@@ -58,20 +63,16 @@ class AdaptiveAgent(AgentBase):
         return array_to_byte(state)
 
 
-class MarkovAgent(AgentBase):
+def train(agent_name, n_episodes, h, w, lr, gamma, eps, p, f, verbosity, save):
+    root_dir = Path(__file__).parents[1] / f"agents/td_sarsa/{agent_name}"
+    if (root_dir / f"{agent_name}.pkl").is_file(): pass
+        # load agents
+    else:
+        agent = AdaptiveAgent(eps, p, f, lr, gamma)
+    game = SnakeGame(w, h, agent_name)
+    plot_scores = []
+    plot_mean_scores = []
+    for k in range(1, n_episodes + 1):
+        game.reset()
 
-    def get_state(self, game):
-        state = [(-1, -1) for _ in range(game.x_tiles * game.y_tiles + 1)]
-        state[0] = (game.food_position[0] // TILE_SIZE, game.food_position[1] // TILE_SIZE)
-        state[1] = (game.head_position[0] // TILE_SIZE, game.head_position[1] // TILE_SIZE)
-        i = 2
-        for pos in game.body_position:
-            state[i] = (pos[0] // TILE_SIZE, pos[1] // TILE_SIZE)
-            i += 1
-        return tuple(state)
-
-
-def get_agent_class_by_string(string):
-    return {"QAgent": AdaptiveAgent,
-            "markov": MarkovAgent}.get(string, None)
 
