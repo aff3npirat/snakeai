@@ -1,17 +1,9 @@
 from base import AgentBase
 from helper import array_to_byte
 from snake_game import TILE_SIZE
-from snakeai.models import AdaptiveEps, TDTrainer
 
 
-class AdaptiveAgent(AgentBase):
-
-    def __init__(self, eps, p, f, lr, gamma):
-        self.model = AdaptiveEps(eps, p, f)
-        self.trainer = TDTrainer(self.model, lr, gamma)
-
-    def get_action(self, state):
-        return self.model.get_action(state)
+class QAgent(AgentBase):
 
     def get_state(self, game):
         dir_u = game.direction.value == 0  # Direction.UP
@@ -72,6 +64,6 @@ class MarkovAgent(AgentBase):
 
 
 def get_agent_class_by_string(string):
-    return {"QAgent": AdaptiveAgent,
+    return {"QAgent": QAgent,
             "markov": MarkovAgent}.get(string, None)
 

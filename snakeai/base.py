@@ -1,14 +1,14 @@
 class AgentBase:
     """Captures environment in states."""
 
+    def __init__(self, model):
+        self.model = model
+
     def get_state(self, game):
         raise NotImplementedError
 
-    def get_action(self, state):
-        raise NotImplementedError
 
-
-class ModelBase:
+class QModelBase:
     """Selects an action based on the representation (state) of environment.
 
     All keyword arguments passed to __init__ can be accessed like normal instance attributes.
@@ -33,5 +33,5 @@ class ModelBase:
     def __setstate__(self, state):
         self.__dict__.update(state)
 
-    def get_action(self, world_state):
+    def get_action(self, world_state, Q):
         raise NotImplementedError
