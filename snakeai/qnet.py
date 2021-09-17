@@ -68,3 +68,6 @@ def qnet(agent_, model_, gamma, agent_name, w, h, n_episodes, verbosity=0, save=
             if save_string_to_file(dict_to_string(params_to_save, sep="\n"), root_dir / f"{agent_name}.yml"):
                 print(f"Saved parameters to '{root_dir / f'{agent_name}.yml'}'")
 
+
+if __name__ == '__main__':
+    qnet("QAgent", "qnet", 1.0, "test_qnet", 20, 20, 1000, verbosity=0, save=True)

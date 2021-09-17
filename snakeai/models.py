@@ -75,7 +75,7 @@ class QNet(ModelBase):
         self.dense_net = keras.Sequential(
             [
                 layers.Dense(hidden_size, activation="relu", input_shape=(input_size,)),
-                layers.Dense(output_size, activation="")
+                layers.Dense(output_size, activation=None)
             ]
         ).compile(optimizer=keras.optimizers.Adam(learning_rate=self.lr),
                   loss=keras.losses.MeanSquaredError())
@@ -88,9 +88,12 @@ class QNet(ModelBase):
 
 
 def get_model_by_string(string):
-    model_cls = {"lin": LinEpsDecay,
-                 "adaptive": AdaptiveEps,
-                 "simple": SimpleEpsDecay}.get(string, None)
+    model_cls = {
+        "lin": LinEpsDecay,
+        "adaptive": AdaptiveEps,
+        "simple": SimpleEpsDecay,
+        "qnet": QNet,
+    }.get(string, None)
     print(f"Please enter values for the following parameters:")
     args = []
     for arg in model_cls.__init__.__code__.co_varnames[1:]:
