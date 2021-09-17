@@ -1,7 +1,6 @@
 import math
 import random
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
@@ -71,15 +70,21 @@ class AdaptiveEps(ModelBase):
 
 class QNet(ModelBase):
 
-    def __init__(self, input_size, hidden_size, output_size):
-        super().__init__()
-        self.dense_net = keras.Sequential([
-            layers.Dense(hidden_size, activation="relu", input_shape=input_size),
-            layers.Dense(output_size, activation="")
-        ])
+    def __init__(self, input_size, hidden_size, output_size, lr):
+        super().__init__(lr=lr)
+        self.dense_net = keras.Sequential(
+            [
+                layers.Dense(hidden_size, activation="relu", input_shape=(input_size,)),
+                layers.Dense(output_size, activation="")
+            ]
+        ).compile(optimizer=keras.optimizers.Adam(learning_rate=self.lr),
+                  loss=keras.losses.MeanSquaredError())
 
     def get_action(self, world_state):
         return np.argmax(self.dense_net(world_state))
+
+    def __call__(self, *args, **kwargs):
+        return self.dense_net(*args, **kwargs)
 
 
 def get_model_by_string(string):
