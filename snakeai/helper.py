@@ -96,3 +96,17 @@ def write_to_file(data, fpath, text=False):
     else:
         with open(fpath, "wb") as file:
             pickle.dump(data, file)
+
+
+def read_from_file(fpath, text=False):
+    try:
+        if text:
+            with open(fpath, "rt") as file:
+                lines = file.readlines()
+                return lines
+        else:
+            with open(fpath, "rb") as file:
+                data = pickle.load(file)
+                return data
+    except FileNotFoundError:
+        return None

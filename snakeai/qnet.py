@@ -1,9 +1,9 @@
 from datetime import datetime
-
 from tensorflow import keras
 from tensorflow.keras import layers
 
 from snakeai.agents import QAgent
+from snakeai.base import AgentBase
 from snakeai.models import AdaptiveEps, QNetTrainer
 from snakeai.snake_game import SnakeGame
 
@@ -26,13 +26,13 @@ class QNet:
         pass
 
 
-class AdaptiveQnetAgent:
+class AdaptiveQnetAgent(AgentBase):
 
     def __init__(self):
-        self.Q = QNet(11, 256, 4)
-        self.model = AdaptiveEps(0.5, 10, 7)
-        self.trainer = QNetTrainer(self.Q.model, 1.0, 0.1)
-        das ist ein tets
+        Q = QNet(11, 256, 4)
+        model = AdaptiveEps(0.5, 10, 7)
+        trainer = QNetTrainer(Q, 1.0, 0.1)
+        super().__init__(Q, model, trainer)
 
 
 def train():

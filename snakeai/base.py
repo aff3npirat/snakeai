@@ -1,11 +1,23 @@
+from snakeai.helper import write_to_file, read_from_file
+
+
 class AgentBase:
     """Captures environment in states."""
 
-    def __init__(self, model):
+    def __init__(self, Q, model, trainer):
+        self.Q = Q
         self.model = model
+        self.trainer = trainer
 
-    def get_state(self, game):
-        raise NotImplementedError
+    def save(self, root_dir, agent_name):
+        write_to_file(self, root_dir / f"{agent_name}.pkl")
+        params = self.model.params
+        params.update(self.trainer.params)
+        write_to_file(params, root_dir / f"{agent_name}.yml")
+
+    @staticmethod
+    def load(file):
+        return read_from_file(file)
 
 
 class QModelBase:
