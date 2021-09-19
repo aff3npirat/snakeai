@@ -28,3 +28,4 @@ class AdaptiveQnetAgent:
         self.Q = QNet(11, 256)
         self.model = AdaptiveEps(0.5, 10, 7)
         self.trainer = QNetTrainer(self.Q.model, 1.0, 0.1)
+

@@ -1,6 +1,7 @@
 import math
 import random
 import numpy as np
+import tensorflow as tf
 from tensorflow import keras
 
 from snakeai.base import QModelBase
@@ -37,16 +38,21 @@ class FVMCTrainer:
 
 class QNetTrainer:
 
-    def __init__(self, model, gamma, lr):
-        self.model = model
-        self.model.compile(
+    def __init__(self, Q, gamma, lr):
+        Q.model.compile(
             optimizer=keras.optimizers.Adam(learning_rate=lr),
             loss=keras.losses.MeanSquaredError(),
         )
+        self.Q = Q
         self.gamma = gamma
 
-    def train_step(self, state, action, reward, next_state, next_action):
-        pred = self.model
+    def train_step(self, state, action, reward, next_state, done):
+        pred = self.Q[state]
+        target = tf.identity(pred)
+        if done:
+            target[action] = reward
+        else:
+            target[action] = reward + self.gamma * max(self.Q[next_state])
 
 
 class SimpleEpsDecay(QModelBase):
