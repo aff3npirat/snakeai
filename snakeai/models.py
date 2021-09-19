@@ -52,7 +52,10 @@ class QNetTrainer:
         if done:
             target[action] = reward
         else:
+            # TODO: target[action] = reward + gamma * Q[next_state][next_action],
+            #       which runs better?
             target[action] = reward + self.gamma * max(self.Q[next_state])
+        self.Q.model.fit(state, target)
 
 
 class SimpleEpsDecay(QModelBase):
