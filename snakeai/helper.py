@@ -87,3 +87,12 @@ def dict_to_string(dict_, sep="\n"):
     for key in dict_:
         as_string += str(key) + ": " + str(dict_[key]) + sep
     return as_string
+
+
+def write_to_file(data, fpath, text=False):
+    if text:
+        with open(fpath, "wt") as file:
+            file.write(data)
+    else:
+        with open(fpath, "wb") as file:
+            pickle.dump(data, file)
