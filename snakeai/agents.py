@@ -1,9 +1,11 @@
+import numpy as np
+
 from base import AgentBase
 from helper import array_to_byte
 from snake_game import TILE_SIZE
 
 
-class QAgent(AgentBase):
+class QAgent:
 
     def get_state(self, game):
         dir_u = game.direction.value == 0  # Direction.UP
@@ -47,7 +49,7 @@ class QAgent(AgentBase):
             game.food_position[0] < game.head_position[1],
             game.food_position[0] > game.head_position[0],
         )
-        return array_to_byte(state)
+        return np.array(state, dtype=int)
 
 
 class MarkovAgent(AgentBase):
