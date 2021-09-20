@@ -79,9 +79,9 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
         if k % 1000 == 0:
             print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
         if verbosity >= 1:
-            plot(plot_scores, plot_mean_scores, agent_name)
+            plot(plot_scores, plot_mean_scores)
     # save
-    plot(plot_scores, plot_mean_scores, agent_name)
+    plot(plot_scores, plot_mean_scores)
     save_plot(root_dir / f"agents/qnet/{agent_name}/{agent_name}.png")
     if save:
         agent.save(root_dir / f"agents/qnet/{agent_name}", agent_name)

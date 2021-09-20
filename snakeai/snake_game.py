@@ -47,7 +47,7 @@ class SnakeGame:
                               [(self.x_tiles // 2) * TILE_SIZE - 3 * TILE_SIZE, (self.y_tiles // 2) * TILE_SIZE]]
         self.food_position = [random.randrange(1, self.x_tiles) * TILE_SIZE, random.randrange(1, self.y_tiles) * TILE_SIZE]
 
-    def play_step(self, action, visualize=False):
+    def play_step(self, action, render=False):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
@@ -90,20 +90,20 @@ class SnakeGame:
             reward -= 10
             return [True, reward]
 
-        if visualize:
+        if render:
             self.update_ui()
             self.fps.tick(SPEED)
         return [False, reward]
 
-    def play_episode(self, agent, render_game):
+    def play_episode(self, agent, render):
         episode = []
         done = False
         while not done:
             state = agent.get_state(self)
             action = agent.model.get_action(state)
-            done, reward = self.play_step(Direction(action), render_game)
+            done, reward = self.play_step(Direction(action), render)
             episode.append((state, action, reward))
-        return episode, self.score
+        return episode
 
     def is_collision(self, point) -> bool:
         w = self.x_tiles * TILE_SIZE

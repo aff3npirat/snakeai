@@ -3,10 +3,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 
-def plot(scores, mean_scores, plot_name=""):
+def plot(scores, mean_scores):
     plt.ion()
     plt.clf()
-    plt.title(plot_name)
     plt.xlabel('n_games')
     plt.plot(scores, label="score")
     plt.plot(mean_scores, label="avg_score")
