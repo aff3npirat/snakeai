@@ -4,7 +4,6 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 from snakeai import root_dir
-from snakeai.agents import QAgent
 from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file
 from snakeai.models import AdaptiveEps, QNetTrainer
@@ -31,18 +30,16 @@ class QNet:
 
 class AdaptiveQnetAgent(AgentBase):
 
-    def __init__(self):
-        Q = QNet(11, 256, 4)
-        model = AdaptiveEps(Q, 0.5, 10, 7)
-        trainer = QNetTrainer(Q, 1.0, 0.1)
+    def __init__(self, in_size, hidden_size, out_size, eps, p, f, gamma, lr):
+        Q = QNet(in_size, hidden_size, out_size)
+        model = AdaptiveEps(Q, eps, p, f)
+        trainer = QNetTrainer(Q, gamma, lr)
         super().__init__(Q, model, trainer)
 
 
-def train(agent_name, h, w, n_episodes, save, verbosity):
+def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl")
-    else:
-        agent = AdaptiveQnetAgent()
     game = SnakeGame(w, h, agent_name)
 
     plot_scores = []
@@ -72,5 +69,3 @@ def train(agent_name, h, w, n_episodes, save, verbosity):
     if save:
         agent.save(root_dir / f"agents/qnet/{agent_name}", agent_name)
         print(f"Saved agent {agent_name}")
-
-
