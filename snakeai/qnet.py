@@ -1,12 +1,11 @@
 from datetime import datetime
-
 from tensorflow import keras
 from tensorflow.keras import layers
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file
-from snakeai.models import AdaptiveEps, QNetTrainer
+from snakeai.models import AdaptiveEps, QNetTrainer, SimpleEpsDecay, LinEpsDecay
 from snakeai.snake_game import SnakeGame
 
 
@@ -34,7 +33,25 @@ class AdaptiveQnetAgent(AgentBase):
         Q = QNet(in_size, hidden_size, out_size)
         model = AdaptiveEps(Q, eps, p, f)
         trainer = QNetTrainer(Q, gamma, lr)
-        super().__init__(Q, model, trainer)
+        super().__init__(model, trainer)
+
+
+class SimpleQNetAgent(AgentBase):
+
+    def __init__(self, in_size, hidden_size, out_size, eps, gamma, lr):
+        Q = QNet(in_size, hidden_size, out_size)
+        model = SimpleEpsDecay(Q, eps)
+        trainer = QNetTrainer(Q, gamma, lr)
+        super().__init__(model, trainer)
+
+
+class LinQNetAgent(AgentBase):
+
+    def __init__(self, in_size, hidden_size, out_size, eps, m, gamma, lr):
+        Q = QNet(in_size, hidden_size, out_size)
+        model = LinEpsDecay(Q, eps, m)
+        trainer = QNetTrainer(Q, gamma, lr)
+        super().__init__(model, trainer)
 
 
 def train(agent, agent_name, h, w, n_episodes, save, verbosity):
