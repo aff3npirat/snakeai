@@ -34,38 +34,6 @@ def save_plot(fpath):
     print(f"Saved plot to '{fpath}'")
 
 
-def save_to_binary_file(data, fpath):
-    fpath.parent.mkdir(parents=True, exist_ok=True)
-    file = open(fpath, 'wb')
-    pickle.dump(data, file)
-    return True
-
-
-def save_string_to_file(data, fpath):
-    fpath.parent.mkdir(parents=True, exist_ok=True)
-    file = open(fpath, 'w')
-    file.write(data)
-    return True
-
-
-def read_from_binary_file(fpath):
-    try:
-        with open(fpath, "rb") as file:
-            data = pickle.load(file)
-            return data
-    except FileNotFoundError:
-        return None
-
-
-def read_string_from_file(fpath):
-    try:
-        with open(fpath, "r") as file:
-            data = file.readlines()
-            return data
-    except FileNotFoundError:
-        return None
-
-
 def array_to_byte(arr):
     """Converts an array to a single byte, where first element in array is MSB.
     A single bit equals 1 if corresponding element in array is interpreted as true.
