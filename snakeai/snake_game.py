@@ -22,13 +22,13 @@ SPEED = 30
 
 
 class SnakeGame:
-    def __init__(self, x_tiles: int = 72, y_tiles: int = 48, window_name="SnakeAI") -> None:
+    def __init__(self, x_tiles: int = 72, y_tiles: int = 48):
         self.x_tiles = x_tiles
         self.y_tiles = y_tiles
         self.game_window = pygame.display.set_mode((self.x_tiles * TILE_SIZE, self.y_tiles * TILE_SIZE))
         self.fps = pygame.time.Clock()
         pygame.init()
-        pygame.display.set_caption(window_name)
+        pygame.display.set_caption("Snake Game")
         self.direction = Direction.RIGHT
         self.head_position = []
         self.body_position = []

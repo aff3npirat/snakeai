@@ -9,10 +9,11 @@ from snakeai.base import ModelBase, TrainerBase
 
 class TDTrainer(TrainerBase):
 
-    def __init__(self, Q, lr, gamma):
-        super().__init__(Q, lr=lr, gamma=gamma)
+    def __init__(self, Q, gamma, lr):
+        super().__init__(Q, gamma=gamma, lr=lr)
 
     def train_step(self, state, action, reward, next_state, next_action):
+        # TODO: target = reward + gamma * max(Q[next_state]), which runs better?
         target = reward + self.gamma * self.Q[next_state][next_action]
         delta = target - self.Q[state][action]
         self.Q[state][action] += self.lr * delta
@@ -48,8 +49,7 @@ class QNetTrainer(TrainerBase):
         if done:
             target[action] = reward
         else:
-            # TODO: target[action] = reward + gamma * Q[next_state][next_action],
-            #       which runs better?
+            # TODO: target[action] = reward + gamma * Q[next_state][next_action], which runs better?
             target[action] = reward + self.gamma * max(self.Q[next_state])
         self.Q.model.fit(state, target)
 

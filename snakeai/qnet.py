@@ -57,7 +57,7 @@ class LinQNetAgent(AgentBase):
 def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl")
-    game = SnakeGame(w, h, agent_name)
+    game = SnakeGame(w, h)
 
     plot_scores = []
     plot_mean_scores = []
@@ -71,6 +71,7 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
             done, reward = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
             agent.trainer.train_step(state, action, reward, next_state, done)
+            agent.model.n_games += 1
             state = next_state
 
         # plot

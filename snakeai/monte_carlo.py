@@ -37,7 +37,7 @@ class LinMCAgent(AgentBase):
 def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl")
-    game = SnakeGame(w, h, agent_name)
+    game = SnakeGame(w, h)
 
     plot_scores = []
     plot_mean_scores = []
@@ -46,6 +46,7 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
         game.reset()
         episode = game.play_episode(agent, verbosity>=2)
         agent.trainer.train_step(episode)
+        agent.model.n_games += 1
 
         # plot
         plot_scores.append(game.score)
