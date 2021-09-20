@@ -4,28 +4,27 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-from snakeai.base import QModelBase
+from snakeai.base import ModelBase, TrainerBase
 
 
-class TDTrainer:
+class TDTrainer(TrainerBase):
 
-    def __init__(self, lr, gamma):
-        self.lr = lr
-        self.gamma = gamma
+    def __init__(self, Q, lr, gamma):
+        super().__init__(Q, lr=lr, gamma=gamma)
 
-    def train_step(self, Q, state, action, reward, next_state, next_action):
-        target = reward + self.gamma * Q[next_state][next_action]
-        delta = target - Q[state][action]
-        Q[state][action] += self.lr * delta
+    def train_step(self, state, action, reward, next_state, next_action):
+        target = reward + self.gamma * self.Q[next_state][next_action]
+        delta = target - self.Q[state][action]
+        self.Q[state][action] += self.lr * delta
 
 
-class FVMCTrainer:
+class FVMCTrainer(TrainerBase):
 
-    def __init__(self, gamma, visit_counter):
-        self.gamma = gamma
+    def __init__(self, Q, gamma, visit_counter):
+        super().__init__(Q, gamma=gamma)
         self.visit_counter = visit_counter
 
-    def train_step(self, Q, episode):
+    def train_step(self, episode):
         G = 0
         for i in reversed(range(len(episode))):
             state, action, reward = episode[i]
@@ -33,18 +32,15 @@ class FVMCTrainer:
 
             if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
                 self.visit_counter[state][action] += 1
-                Q[state][action] += (G - Q[state][action]) / self.visit_counter[state][action]
+                self.Q[state][action] += (G - self.Q[state][action]) / self.visit_counter[state][action]
 
 
-class QNetTrainer:
+class QNetTrainer(TrainerBase):
 
     def __init__(self, Q, gamma, lr):
-        Q.model.compile(
-            optimizer=keras.optimizers.Adam(learning_rate=lr),
-            loss=keras.losses.MeanSquaredError(),
-        )
-        self.Q = Q
-        self.gamma = gamma
+        Q.model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr),
+                        loss=keras.losses.MeanSquaredError())
+        super().__init__(Q, gamma=gamma, lr=lr)
 
     def train_step(self, state, action, reward, next_state, done):
         pred = self.Q[state]
@@ -58,53 +54,51 @@ class QNetTrainer:
         self.Q.model.fit(state, target)
 
 
-class SimpleEpsDecay(QModelBase):
+class SimpleEpsDecay(ModelBase):
 
-    def __init__(self, eps):
-        super().__init__(eps=eps, n_games=0)
+    def __init__(self, Q, eps):
+        super().__init__(Q, eps=eps, n_games=0)
 
-    def get_action(self, world_state, Q):
+    def get_action(self, world_state):
         k = (self.n_games + 1) / 100
-        if random.random() < self.eps/k or world_state not in Q:
+        if random.random() < self.eps/k or world_state not in self.Q:
             return random.choice([0, 1, 2, 3])
-        return np.argmax(Q[world_state])
+        return np.argmax(self.Q[world_state])
 
 
-class LinEpsDecay(QModelBase):
+class LinEpsDecay(ModelBase):
     """Chance of doing random action decreases linear with number of games played."""
 
-    def __init__(self, eps, m):
-        super().__init__(eps=eps, m=m, n_games=0)
-        self.Q = {}
+    def __init__(self, Q, eps, m):
+        super().__init__(Q, eps=eps, m=m, n_games=0)
 
-    def get_action(self, world_state, Q):
+    def get_action(self, world_state):
         y_intersect = 50/self.eps
         chance = (-self.m * self.n_games + y_intersect)/y_intersect
-        if random.random() < chance or world_state not in Q:
+        if random.random() < chance or world_state not in self.Q:
             return random.choice([0, 1, 2, 3])
-        return np.argmax(Q[world_state])
+        return np.argmax(self.Q[world_state])
 
 
-class AdaptiveEps(QModelBase):
+class AdaptiveEps(ModelBase):
     """Implementation based on 'Adaptive implementation of e-greedy in Reinforcment Learning' (Dos Santos Mignon, 2017).
 
     For readability purposes parameter l is replaced with p.
     """
 
-    def __init__(self, eps, p, f):
-        super().__init__(eps=eps, p=p, f=f, n_games=0)
-        self.Q = {}
+    def __init__(self, Q, eps, p, f):
+        super().__init__(Q, eps=eps, p=p, f=f, n_games=0)
         self.max_prev = 0
         self.k = 0
 
     # noinspection PyAttributeOutsideInit
-    def get_action(self, world_state, Q):
+    def get_action(self, world_state):
         if world_state not in self.Q:
-            Q[world_state] = [0.0, 0.0, 0.0, 0.0]
+            self.Q[world_state] = [0.0, 0.0, 0.0, 0.0]
 
-        greedy_action = np.argmax(Q[world_state])
+        greedy_action = np.argmax(self.Q[world_state])
         if np.random.uniform(0, 1) <= self.eps:
-            max_curr = Q[world_state][greedy_action]
+            max_curr = self.Q[world_state][greedy_action]
             self.k += 1
             if self.k == self.p:
                 diff = (max_curr - self.max_prev) * self.f

@@ -1,4 +1,4 @@
-from snakeai.helper import write_to_file, read_from_file
+from snakeai.helper import write_to_file
 
 
 class AgentBase:
@@ -15,10 +15,6 @@ class AgentBase:
         params.update(self.trainer.params)
         write_to_file(params, root_dir / f"{agent_name}.yml")
 
-    @staticmethod
-    def load(file):
-        return read_from_file(file)
-
 
 class QModelBase:
     """Selects an action based on the representation (state) of environment.
@@ -26,9 +22,10 @@ class QModelBase:
     All keyword arguments passed to __init__ can be accessed like normal instance attributes.
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, Q, **kwargs):
         # contains all parameters which are saved to .yml file.
         self.params = kwargs
+        self.Q = Q
 
     def __getattr__(self, name):
         if name in self.__dict__['params']:
@@ -37,7 +34,7 @@ class QModelBase:
             raise AttributeError
 
     def __setattr__(self, name, value):
-        if not name == 'params' and name in self.params:
+        if name != 'params' and name in self.params:
             self.params[name] = value
         else:
             self.__dict__[name] = value
@@ -45,5 +42,27 @@ class QModelBase:
     def __setstate__(self, state):
         self.__dict__.update(state)
 
-    def get_action(self, world_state, Q):
+    def get_action(self, world_state):
         raise NotImplementedError
+
+
+class TrainerBase:
+
+    def __init__(self, Q, **kwargs):
+        self.params = kwargs
+        self.Q = Q
+
+    def __getattr__(self, name):
+        if name in self.__dict__['params']:
+            return self.__dict__['params'][name]
+        else:
+            raise AttributeError
+
+    def __setattr__(self, name, value):
+        if name != 'params' and name in self.params:
+            self.params[name] = value
+        else:
+            self.__dict__[name] = value
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
