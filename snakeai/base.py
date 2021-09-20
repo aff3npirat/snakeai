@@ -4,8 +4,7 @@ from snakeai.helper import write_to_file
 class AgentBase:
     """Captures environment in states."""
 
-    def __init__(self, Q, model, trainer):
-        self.Q = Q
+    def __init__(self, model, trainer):
         self.model = model
         self.trainer = trainer
 
