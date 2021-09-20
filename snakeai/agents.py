@@ -63,9 +63,3 @@ class MarkovAgent(AgentBase):
             state[i] = (pos[0] // TILE_SIZE, pos[1] // TILE_SIZE)
             i += 1
         return tuple(state)
-
-
-def get_agent_class_by_string(string):
-    return {"QAgent": QAgent,
-            "markov": MarkovAgent}.get(string, None)
-

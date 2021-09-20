@@ -33,18 +33,6 @@ def save_plot(fpath):
     print(f"Saved plot to '{fpath}'")
 
 
-def array_to_byte(arr):
-    """Converts an array to a single byte, where first element in array is MSB.
-    A single bit equals 1 if corresponding element in array is interpreted as true.
-    """
-    byte = 0b0
-    for b in arr:
-        byte = byte << 1
-        if b:
-            byte |= 1
-    return byte
-
-
 def dict_to_string(dict_, sep="\n"):
     """Converts dictionary to string.
 

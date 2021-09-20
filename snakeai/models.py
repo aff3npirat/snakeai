@@ -110,16 +110,3 @@ class AdaptiveEps(ModelBase):
                 self.k = 0
             return random.choice([0, 1, 2, 3])
         return greedy_action
-
-
-def get_model_by_string(string):
-    model_cls = {
-        "lin": LinEpsDecay,
-        "adaptive": AdaptiveEps,
-        "simple": SimpleEpsDecay,
-    }.get(string, None)
-    print(f"Please enter values for the following parameters:")
-    args = []
-    for arg in model_cls.__init__.__code__.co_varnames[1:]:
-        args.append(float(input(f"{arg}: ")))
-    return model_cls(*args)
