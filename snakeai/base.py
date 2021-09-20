@@ -16,7 +16,7 @@ class AgentBase:
         write_to_file(params, root_dir / f"{agent_name}.yml")
 
 
-class QModelBase:
+class ModelBase:
     """Selects an action based on the representation (state) of environment.
 
     All keyword arguments passed to __init__ can be accessed like normal instance attributes.
