@@ -1,7 +1,6 @@
 import numpy as np
 
 from base import AgentBase
-from helper import array_to_byte
 from snake_game import TILE_SIZE
 
 
