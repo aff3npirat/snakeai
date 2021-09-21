@@ -37,6 +37,7 @@ class LinTDAgent(AgentBase):
 def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl")
+        print(f"Loaded agent {agent_name}")
     game = SnakeGame(w, h)
 
     plot_scores = []

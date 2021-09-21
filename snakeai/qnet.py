@@ -1,7 +1,8 @@
 import numpy as np
 from datetime import datetime
 from tensorflow import keras
-from tensorflow.keras import layers
+from keras import layers
+from keras.models import load_model
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
@@ -27,7 +28,19 @@ class QNet:
         pass
 
 
-class AdaptiveQnetAgent(AgentBase):
+class QNetAgentBase(AgentBase):
+
+    def __init__(self, model, trainer):
+        super().__init__(model, trainer)
+
+    def save(self, root, agent_name):
+        Q = self.trainer.Q
+        Q.model.save(root / f"{agent_name}_model.h5")
+        Q.model = None
+        AgentBase.save(self, root, agent_name)
+
+
+class AdaptiveQnetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, p, f, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
@@ -36,7 +49,7 @@ class AdaptiveQnetAgent(AgentBase):
         super().__init__(model, trainer)
 
 
-class SimpleQNetAgent(AgentBase):
+class SimpleQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
@@ -45,7 +58,7 @@ class SimpleQNetAgent(AgentBase):
         super().__init__(model, trainer)
 
 
-class LinQNetAgent(AgentBase):
+class LinQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, m, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
@@ -57,6 +70,8 @@ class LinQNetAgent(AgentBase):
 def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl")
+        agent.trainer.Q.model = load_model(root_dir / f"agents/qnet/{agent_name}/{agent_name}_model.h5")
+        print(f"Loaded agent {agent_name}")
     game = SnakeGame(w, h)
 
     plot_scores = []

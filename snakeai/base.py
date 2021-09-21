@@ -2,17 +2,16 @@ from snakeai.helper import write_to_file, dict_to_string
 
 
 class AgentBase:
-    """Captures environment in states."""
 
     def __init__(self, model, trainer):
         self.model = model
         self.trainer = trainer
 
-    def save(self, root_dir, agent_name):
-        write_to_file(self, root_dir / f"{agent_name}.pkl")
+    def save(self, root, agent_name):
+        write_to_file(self, root / f"{agent_name}.pkl")
         params = self.trainer.params
         params.update(self.model.params)
-        write_to_file(dict_to_string(params), root_dir / f"{agent_name}.yml", text=True)
+        write_to_file(dict_to_string(params), root / f"{agent_name}.yml", text=True)
 
 
 class ModelBase:
@@ -39,7 +38,7 @@ class ModelBase:
             self.__dict__[name] = value
 
     def __setstate__(self, state):
-        self.__dict__.update(state)
+        self.__dict__ = state
 
     def get_action(self, world_state):
         raise NotImplementedError
@@ -64,4 +63,4 @@ class TrainerBase:
             self.__dict__[name] = value
 
     def __setstate__(self, state):
-        self.__dict__.update(state)
+        self.__dict__ = state
