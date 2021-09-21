@@ -61,3 +61,4 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if save:
         agent.save(root_dir / f"agents/monte_carlo/{agent_name}", agent_name)
         print(f"Saved agent {agent_name}")
+    game.quit()

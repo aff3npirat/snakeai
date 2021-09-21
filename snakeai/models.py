@@ -13,6 +13,11 @@ class TDTrainer(TrainerBase):
         super().__init__(Q, gamma=gamma, lr=lr)
 
     def train_step(self, state, action, reward, next_state, next_action):
+        if state not in self.Q:
+            self.Q[state] = [0, 0, 0, 0]
+        if next_state not in self.Q:
+            self.Q[next_state] = [0, 0, 0, 0]
+
         # TODO: target = reward + gamma * max(Q[next_state]), which runs better?
         target = reward + self.gamma * self.Q[next_state][next_action]
         delta = target - self.Q[state][action]
@@ -31,6 +36,10 @@ class FVMCTrainer(TrainerBase):
             state, action, reward = episode[i]
             G = self.gamma * G + reward
 
+            if state not in self.Q:
+                self.Q[state] = [0, 0, 0, 0]
+                self.visit_counter[state] = [0, 0, 0, 0]
+
             if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
                 self.visit_counter[state][action] += 1
                 self.Q[state][action] += (G - self.Q[state][action]) / self.visit_counter[state][action]
@@ -44,14 +53,13 @@ class QNetTrainer(TrainerBase):
         super().__init__(Q, gamma=gamma, lr=lr)
 
     def train_step(self, state, action, reward, next_state, done):
-        pred = self.Q[state]
-        target = tf.identity(pred)
+        target = tf.unstack(self.Q[state][0])
         if done:
             target[action] = reward
         else:
             # TODO: target[action] = reward + gamma * Q[next_state][next_action], which runs better?
-            target[action] = reward + self.gamma * max(self.Q[next_state])
-        self.Q.model.fit(state, target)
+            target[action] = reward + self.gamma * max(self.Q[next_state][0])
+        self.Q.model.fit(np.expand_dims(state, axis=0), np.array([target]), verbose=0)
 
 
 class SimpleEpsDecay(ModelBase):

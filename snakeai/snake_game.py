@@ -1,6 +1,8 @@
-from enum import Enum
+import sys
 import pygame
 import random
+
+from enum import Enum
 
 
 class Direction(Enum):
@@ -124,3 +126,4 @@ class SnakeGame:
 
     def quit(self):
         pygame.quit()
+        sys.exit()

@@ -52,18 +52,19 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
             next_state = agent.get_state(game)
             next_action = agent.model.get_action(state)
             agent.trainer.train_step(state, action, reward, next_state, next_action)
-            agent.model.n_games += 1
+        agent.model.n_games += 1
 
-            # plot
-            plot_scores.append(game.score)
-            plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
-            if k % 1000 == 0:
-                print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
-            if verbosity >= 1:
-                plot(plot_scores, plot_mean_scores)
+        # plot
+        plot_scores.append(game.score)
+        plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
+        if k % 1000 == 0:
+            print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
+        if verbosity >= 1:
+            plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
     save_plot(root_dir / f"agents/TD/{agent_name}/{agent_name}.png")
     if save:
         agent.save(root_dir / f"agents/TD/{agent_name}", agent_name)
         print(f"Saved agent {agent_name}")
+    game.quit()

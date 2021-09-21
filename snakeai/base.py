@@ -1,4 +1,4 @@
-from snakeai.helper import write_to_file
+from snakeai.helper import write_to_file, dict_to_string
 
 
 class AgentBase:
@@ -10,9 +10,9 @@ class AgentBase:
 
     def save(self, root_dir, agent_name):
         write_to_file(self, root_dir / f"{agent_name}.pkl")
-        params = self.model.params
-        params.update(self.trainer.params)
-        write_to_file(params, root_dir / f"{agent_name}.yml")
+        params = self.trainer.params
+        params.update(self.model.params)
+        write_to_file(dict_to_string(params), root_dir / f"{agent_name}.yml", text=True)
 
 
 class ModelBase:

@@ -48,7 +48,7 @@ class QAgent:
             game.food_position[0] < game.head_position[1],
             game.food_position[0] > game.head_position[0],
         )
-        return np.array(state, dtype=int)
+        return state
 
 
 class MarkovAgent(AgentBase):

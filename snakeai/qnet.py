@@ -1,3 +1,4 @@
+import numpy as np
 from datetime import datetime
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -14,14 +15,13 @@ class QNet:
     def __init__(self, input_size, hidden_size, output_size):
         self.model = keras.Sequential(
             [
-                layers.InputLayer(input_shape=(input_size,), name="layer_in"),
-                layers.Dense(hidden_size, activation="relu", name="layer_hidden"),
+                layers.Dense(hidden_size, activation="relu", name="layer_hidden", input_dim=input_size),
                 layers.Dense(output_size, name="layer_out"),
             ]
         )
 
     def __getitem__(self, state):
-        return self.model(state)
+        return self.model(np.expand_dims(state, axis=0))
 
     def __setitem__(self, key, value):
         pass
@@ -71,8 +71,8 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
             done, reward = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
             agent.trainer.train_step(state, action, reward, next_state, done)
-            agent.model.n_games += 1
             state = next_state
+        agent.model.n_games += 1
 
         # plot
         plot_scores.append(game.score)
@@ -87,3 +87,4 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
     if save:
         agent.save(root_dir / f"agents/qnet/{agent_name}", agent_name)
         print(f"Saved agent {agent_name}")
+    game.quit()
