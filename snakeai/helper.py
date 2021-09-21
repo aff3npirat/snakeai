@@ -45,7 +45,10 @@ def dict_to_string(dict_, sep="\n"):
 
 
 def write_to_file(data, fpath, text=False):
-    Path.mkdir(fpath, parents=True, exist_ok=True)
+    if isinstance(fpath, Path):
+        Path.mkdir(fpath.parent, parents=True, exist_ok=True)
+    else:
+        Path.mkdir(Path(fpath).parent, parents=True, exist_ok=True)
     if text:
         with open(fpath, "wt") as file:
             file.write(data)
