@@ -54,7 +54,7 @@ def write_to_file(data, fpath, text=False):
             file.write(data)
     else:
         with open(fpath, "wb") as file:
-            pickle.dump(data, file)
+            pickle.dump(data, file, protocol=5)
 
 
 def read_from_file(fpath, text=False):
