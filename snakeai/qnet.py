@@ -9,7 +9,7 @@ from keras.models import load_model
 from snakeai import root_dir
 from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file
-from snakeai.eps_greedy import AdaptiveEps, lin_eps_decay, simple_eps_decay
+from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.snake_game import SnakeGame
 
 
@@ -53,6 +53,7 @@ class SimpleQNetAgent(QNetAgentBase):
                 layers.Dense(out_size, name="out"),
             ]
         )
+        # TODO: can pickle save attribute-functions?
         super().__init__(Q, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
 
     def get_action(self, state):

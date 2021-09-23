@@ -2,6 +2,7 @@ import math
 import numpy as np
 
 
+# TODO: implement all ways to perceive the world (as state)
 def simple_eps_decay(qs, eps, n_games):
     k = (n_games + 1) / 100
     probs = [eps / k, eps / k, eps / k, eps / k]

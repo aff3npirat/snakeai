@@ -3,7 +3,7 @@ from datetime import datetime
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
-from snakeai.eps_greedy import AdaptiveEps, lin_eps_decay, simple_eps_decay
+from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.helper import plot, save_plot, read_from_file
 from snakeai.snake_game import SnakeGame
 
