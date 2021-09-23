@@ -1,38 +1,8 @@
 from datetime import datetime
 
 from snakeai import root_dir
-from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file, write_to_file
-from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.snake_game import SnakeGame
-
-
-# TODO: add visit_counter to agent
-class AdaptiveMCAgent(AgentBase):
-
-    def __init__(self, eps, p, f, gamma):
-        Q = {}
-        model = AdaptiveEps(Q, eps, p, f)
-        trainer = FVMCTrainer(Q, gamma, {})
-        super().__init__(model, trainer)
-
-
-class SimpleMCAgent(AgentBase):
-
-    def __init__(self, eps, gamma):
-        Q = {}
-        model = SimpleEpsDecay(Q, eps)
-        trainer = FVMCTrainer(Q, gamma, {})
-        super().__init__(model, trainer)
-
-
-class LinMCAgent(AgentBase):
-
-    def __init__(self, eps, m, gamma):
-        Q = {}
-        model = LinEpsDecay(Q, eps, m)
-        trainer = FVMCTrainer(Q, gamma, {})
-        super().__init__(model, trainer)
 
 
 def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):

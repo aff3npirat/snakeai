@@ -3,12 +3,12 @@ from datetime import datetime
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
-from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
+from snakeai.eps_greedy import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.helper import plot, save_plot, read_from_file
 from snakeai.snake_game import SnakeGame
 
 
-class AdaptiveTDAgent(AgentBase):
+class AdaptiveDecayAgent(AgentBase):
 
     def __init__(self, eps, p, f, gamma, lr):
         super().__init__({}, AdaptiveEps(), eps=eps, p=p, f=f, gamma=gamma, lr=lr)
@@ -16,12 +16,12 @@ class AdaptiveTDAgent(AgentBase):
     # noinspection PyAttributeOutsideInit
     def get_action(self, state):
         if state not in self.Q:
-            self.Q[state] = [[0], [0], [0], [0]]
+            self.Q[state] = [0, 0, 0, 0]
         probs, self.eps = self.eps_greedy(self.Q[state], state, self.eps, self.p, self.f)
         return random.choices([0, 1, 2, 3], weights=probs)
 
 
-class SimpleTDAgent(AgentBase):
+class SimpleDecayAgent(AgentBase):
 
     def __init__(self, eps, gamma, lr):
         super().__init__({}, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
@@ -33,7 +33,7 @@ class SimpleTDAgent(AgentBase):
         return random.choices([0, 1, 2, 3], weights=probs)
 
 
-class LinTDAgent(AgentBase):
+class LinDecayAgent(AgentBase):
 
     def __init__(self, eps, m, gamma, lr):
         super().__init__({}, lin_eps_decay, eps=eps, m=m, gamma=gamma, lr=lr)
@@ -65,9 +65,9 @@ def sarsa(agent, agent_name, h, w, n_episodes, save, verbosity):
             next_state = agent.get_state(game)
             next_action = agent.get_action(state)
             # train step
-            target = reward + agent.gamma * agent.Q[next_state][next_action][0]
-            delta = target - agent.Q[state][action][0]
-            agent.Q[state][action][0] += agent.lr * delta
+            target = reward + agent.gamma * agent.Q[next_state][next_action]
+            delta = target - agent.Q[state][action]
+            agent.Q[state][action] += agent.lr * delta
         agent.n_games += 1
 
         # plot
