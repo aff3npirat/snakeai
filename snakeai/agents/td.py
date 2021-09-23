@@ -6,7 +6,7 @@ from snakeai.helper import plot, save_plot, read_from_file, write_to_file, dict_
 from snakeai.snake_game import SnakeGame
 
 
-# TODO: implement q-learning, which runs better?
+# TODO: TDQLearning
 class TDSarsa:
 
     def __init__(self, params, name):

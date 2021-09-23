@@ -16,6 +16,7 @@ class QNet(keras.Sequential):
         return self(item)[0]
 
 
+# TODO: QNetSarsa
 class QNetLearning:
 
     def __init__(self, params, name):
