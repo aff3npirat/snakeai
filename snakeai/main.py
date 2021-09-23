@@ -6,6 +6,7 @@ from snakeai.helper import plot, read_from_file, save_plot
 from snakeai.snake_game import SnakeGame
 
 
+# TODO: testing
 def train(agent=None, agent_name=None, get_state=None, eps_greedy=None, h=20, w=20, n_episodes=1,
           save=True, verbosity=3):
     agent_root = root_dir / f"agents/TD/{agent_name}"
