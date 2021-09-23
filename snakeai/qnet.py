@@ -1,7 +1,6 @@
 import random
 import numpy as np
 import tensorflow as tf
-from abc import ABC
 from datetime import datetime
 from tensorflow import keras
 from keras import layers
@@ -14,7 +13,7 @@ from snakeai.eps_greedy import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.snake_game import SnakeGame
 
 
-class QNetAgentBase(AgentBase, ABC):
+class QNetAgentBase(AgentBase):
 
     def __init__(self, Q, eps_greedy, **kwargs):
         super().__init__(Q, eps_greedy, **kwargs)
@@ -23,6 +22,9 @@ class QNetAgentBase(AgentBase, ABC):
         self.Q.save(root / f"{agent_name}_model.h5")
         self.Q = None
         AgentBase.save(self, root, agent_name)
+
+    def get_action(self, state):
+        raise NotImplementedError
 
 
 class AdaptiveQnetAgent(QNetAgentBase):
