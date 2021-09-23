@@ -67,30 +67,20 @@ def lin_eps_decay(action_values, params):
     return action_probs
 
 
-class AdaptiveEps:
-    """Implementation based on 'Adaptive implementation of e-greedy in Reinforcment Learning' (Dos Santos Mignon, 2017).
-
-    For readability purposes parameter l is replaced with p.
-    """
-
-    def __init__(self):
-        self.max_prev = 0
-        self.k = 0
-
-    def __call__(self, action_values, params):
-        greedy_action = np.argmax(action_values)
-        if np.random.uniform(0, 1) <= params['eps']:
-            max_curr = action_values[greedy_action]
-            self.k += 1
-            if self.k == params['p']:
-                diff = (max_curr - self.max_prev) * params['f']
-                if diff > 0:
-                    params['eps'] = 1 / (1 + math.exp(-2 * diff)) - 0.5
-                elif diff < 0:
-                    params['eps'] = 0.5
-                self.max_prev = max_curr
-                self.k = 0
-            return [1, 1, 1, 1]
-        action_probs = [0, 0, 0, 0]
-        action_probs[greedy_action] = 1
-        return action_probs
+def adaptive_eps_decay(self, action_values, params):
+    greedy_action = np.argmax(action_values)
+    if np.random.uniform(0, 1) <= params['eps']:
+        max_curr = action_values[greedy_action]
+        params['k'] += 1
+        if params['k'] == params['p']:
+            diff = (max_curr - self.max_prev) * params['f']
+            if diff > 0:
+                params['eps'] = 1 / (1 + math.exp(-2 * diff)) - 0.5
+            elif diff < 0:
+                params['eps'] = 0.5
+            params['max_prev'] = max_curr
+            params['k'] = 0
+        return [1, 1, 1, 1]
+    action_probs = [0, 0, 0, 0]
+    action_probs[greedy_action] = 1
+    return action_probs

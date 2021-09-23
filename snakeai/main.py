@@ -1,0 +1,39 @@
+import random
+from datetime import datetime
+
+from snakeai import root_dir
+from snakeai.helper import plot, read_from_file, save_plot
+from snakeai.snake_game import SnakeGame
+
+
+def train(agent=None, agent_name=None, get_state=None, eps_greedy=None, h=20, w=20, n_episodes=1,
+          save=True, verbosity=3):
+    agent_root = root_dir / f"agents/TD/{agent_name}"
+    if (agent_root / f"{agent_name}.pkl").is_file():
+        agent = read_from_file(agent_root / f"{agent_name}.pkl")
+        print(f"Loaded agent {agent_name}")
+    game = SnakeGame(w, h)
+
+    def get_action(state):
+        probs = eps_greedy(agent.Q[state], agent.params)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
+
+    plot_scores = []
+    plot_mean_scores = []
+    for k in range(1, n_episodes + 1):
+        agent.train_episode(game, get_state, get_action, verbosity>=2)
+
+        # plot
+        plot_scores.append(game.score)
+        plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
+        if k % 1000 == 0:
+            print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
+        if verbosity >= 1:
+            plot(plot_scores, plot_mean_scores)
+    # save
+    plot(plot_scores, plot_mean_scores)
+    save_plot(agent_root / f"{agent.name}.png")
+    if save:
+        agent.save(agent_root)
+        print(f"Saved agent {agent.name}")
+    game.quit()

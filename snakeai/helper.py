@@ -33,7 +33,7 @@ def save_plot(fpath):
     print(f"Saved plot to '{fpath}'")
 
 
-def dict_to_string(dict_, sep="\n"):
+def dict_to_str(dict_, sep="\n"):
     """Converts dictionary to string.
 
     Each dictionary entry is converted as 'key: value' followed by seperator (sep).
