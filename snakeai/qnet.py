@@ -15,7 +15,13 @@ from snakeai.snake_game import SnakeGame
 
 class QNetAgentBase(AgentBase):
 
-    def __init__(self, Q, eps_greedy, **kwargs):
+    def __init__(self, in_size, hidden_size, out_size, eps_greedy, **kwargs):
+        Q = keras.Sequential(
+            [
+                layers.Dense(hidden_size, activation="relu", name="hidden", input_dim=in_size),
+                layers.Dense(out_size, name="out"),
+            ]
+        )
         super().__init__(Q, eps_greedy, **kwargs)
 
     def save(self, root, agent_name):
@@ -30,13 +36,8 @@ class QNetAgentBase(AgentBase):
 class AdaptiveQnetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, p, f, gamma, lr):
-        Q = keras.Sequential(
-            [
-                layers.Dense(hidden_size, activation="relu", name="hidden", input_dim=in_size),
-                layers.Dense(out_size, name="out"),
-            ]
-        )
-        super().__init__(Q, AdaptiveEps(), gamma=gamma, lr=lr, eps=eps, p=p, f=f)
+        super().__init__(in_size, hidden_size, out_size, AdaptiveEps(), gamma=gamma, lr=lr,
+                         eps=eps, p=p, f=f)
 
     # noinspection PyAttributeOutsideInit
     def get_action(self, state):
@@ -47,14 +48,7 @@ class AdaptiveQnetAgent(QNetAgentBase):
 class SimpleQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, gamma, lr):
-        Q = keras.Sequential(
-            [
-                layers.Dense(hidden_size, activation="relu", name="hidden", input_dim=in_size),
-                layers.Dense(out_size, name="out"),
-            ]
-        )
-        # TODO: can pickle save attribute-functions?
-        super().__init__(Q, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
+        super().__init__(in_size, hidden_size, out_size, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
 
     def get_action(self, state):
         probs = self.eps_greedy(self.Q(state), self.eps, self.n_games)
@@ -64,13 +58,7 @@ class SimpleQNetAgent(QNetAgentBase):
 class LinQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, m, gamma, lr):
-        Q = keras.Sequential(
-            [
-                layers.Dense(hidden_size, activation="relu", name="hidden", input_dim=in_size),
-                layers.Dense(out_size, name="out"),
-            ]
-        )
-        super().__init__(Q, lin_eps_decay, gamma=gamma, lr=lr, m=m, eps=eps)
+        super().__init__(in_size, hidden_size, out_size, lin_eps_decay, gamma=gamma, lr=lr, m=m, eps=eps)
 
     def get_action(self, state):
         probs = self.eps_greedy(self.Q(state), self.eps, self.m, self.n_games)

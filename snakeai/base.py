@@ -3,13 +3,18 @@ from snakeai.helper import write_to_file, dict_to_string
 
 class AgentBase:
 
-    def __init__(self, Q, eps_greedy, **kwargs):
+    def __init__(self, Q, eps_greedy, game_to_state, **kwargs):
         self.params = kwargs
         self.Q = Q
         self.eps_greedy = eps_greedy
+        self._get_state = game_to_state
         self.n_games = 0
 
     def get_action(self, state):
+        raise NotImplementedError
+
+    def get_state(self, game):
+        # return self._get_state(game)
         raise NotImplementedError
 
     def save(self, root, agent_name):
