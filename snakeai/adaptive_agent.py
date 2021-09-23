@@ -2,7 +2,7 @@ from pathlib import Path
 
 from snakeai.base import AgentBase
 from snakeai.helper import array_to_byte
-from snakeai.models import TDTrainer, AdaptiveEps
+from snakeai.model import TDTrainer, AdaptiveEps
 from snakeai.snake_game import TILE_SIZE, SnakeGame
 
 

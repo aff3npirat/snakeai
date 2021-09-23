@@ -1,8 +1,9 @@
+import random
 from datetime import datetime
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
-from snakeai.models import AdaptiveEps, LinEpsDecay, SimpleEpsDecay, TDTrainer
+from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.helper import plot, save_plot, read_from_file
 from snakeai.snake_game import SnakeGame
 
@@ -10,31 +11,43 @@ from snakeai.snake_game import SnakeGame
 class AdaptiveTDAgent(AgentBase):
 
     def __init__(self, eps, p, f, gamma, lr):
-        Q = {}
-        model = AdaptiveEps(Q, eps, p, f)
-        trainer = TDTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        super().__init__({}, AdaptiveEps(), eps=eps, p=p, f=f, gamma=gamma, lr=lr)
+
+    # noinspection PyAttributeOutsideInit
+    def get_action(self, state):
+        if state not in self.Q:
+            self.Q[state] = [0, 0, 0, 0]
+        # TODO: pass Q[state] instead of Q, increase in speed?
+        probs, self.eps = self.eps_greedy(self.Q, state, self.eps, self.p, self.f)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
 class SimpleTDAgent(AgentBase):
 
     def __init__(self, eps, gamma, lr):
-        Q = {}
-        model = SimpleEpsDecay(Q, eps)
-        trainer = TDTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        super().__init__({}, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
+
+    def get_action(self, state):
+        if state not in self.Q:
+            self.Q[state] = [0, 0, 0, 0]
+        probs = self.eps_greedy(self.Q, state, self.eps, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
 class LinTDAgent(AgentBase):
 
     def __init__(self, eps, m, gamma, lr):
-        Q = {}
-        model = LinEpsDecay(Q, eps, m)
-        trainer = TDTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        super().__init__({}, lin_eps_decay, eps=eps, m=m, gamma=gamma, lr=lr)
+
+    def get_action(self, state):
+        if state not in self.Q:
+            self.Q[state] = [0, 0, 0, 0]
+        probs = self.eps_greedy(self.Q, state, self.eps, self.m, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
-def train(agent, agent_name, h, w, n_episodes, save, verbosity):
+# TODO: implement q-learning, which runs better?
+def sarsa(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl")
         print(f"Loaded agent {agent_name}")
@@ -48,12 +61,14 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
         action = agent.model.get_action(state)
         done = False
         while not done:
-            # train
             reward, done = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
             next_action = agent.model.get_action(state)
-            agent.trainer.train_step(state, action, reward, next_state, next_action)
-        agent.model.n_games += 1
+            # train step
+            target = reward + agent.gamma * agent.Q[next_state][next_action]
+            delta = target - agent.Q[state][action]
+            agent.Q[state][action] += agent.lr * delta
+        agent.n_games += 1
 
         # plot
         plot_scores.append(game.score)

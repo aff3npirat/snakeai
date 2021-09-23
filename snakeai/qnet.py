@@ -1,4 +1,7 @@
+import random
 import numpy as np
+import tensorflow as tf
+from abc import ABC
 from datetime import datetime
 from tensorflow import keras
 from keras import layers
@@ -7,7 +10,7 @@ from keras.models import load_model
 from snakeai import root_dir
 from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file
-from snakeai.models import AdaptiveEps, QNetTrainer, SimpleEpsDecay, LinEpsDecay
+from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.snake_game import SnakeGame
 
 
@@ -24,19 +27,15 @@ class QNet:
     def __getitem__(self, state):
         return self.model(np.expand_dims(state, axis=0))
 
-    def __setitem__(self, key, value):
-        pass
 
+class QNetAgentBase(AgentBase, ABC):
 
-class QNetAgentBase(AgentBase):
-
-    def __init__(self, model, trainer):
-        super().__init__(model, trainer)
+    def __init__(self, Q, eps_greedy, **kwargs):
+        super().__init__(Q, eps_greedy, **kwargs)
 
     def save(self, root, agent_name):
-        Q = self.trainer.Q
-        Q.model.save(root / f"{agent_name}_model.h5")
-        Q.model = None
+        self.Q.model.save(root / f"{agent_name}_model.h5")
+        self.Q.model = None
         AgentBase.save(self, root, agent_name)
 
 
@@ -44,33 +43,43 @@ class AdaptiveQnetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, p, f, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
-        model = AdaptiveEps(Q, eps, p, f)
-        trainer = QNetTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        eps_greedy = AdaptiveEps()
+        super().__init__(Q, eps_greedy, gamma=gamma, lr=lr, eps=eps, p=p, f=f)
+
+    # noinspection PyAttributeOutsideInit
+    def get_action(self, state):
+        probs, self.eps = self.eps_greedy(self.Q, state, self.eps, self.p, self.f)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
 class SimpleQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
-        model = SimpleEpsDecay(Q, eps)
-        trainer = QNetTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        super().__init__(Q, simple_eps_decay, eps=eps, gamma=gamma, lr=lr)
+
+    def get_action(self, state):
+        probs = self.eps_greedy(self.Q, state, self.eps, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
 class LinQNetAgent(QNetAgentBase):
 
     def __init__(self, in_size, hidden_size, out_size, eps, m, gamma, lr):
         Q = QNet(in_size, hidden_size, out_size)
-        model = LinEpsDecay(Q, eps, m)
-        trainer = QNetTrainer(Q, gamma, lr)
-        super().__init__(model, trainer)
+        eps_greedy = lin_eps_decay
+        super().__init__(Q, eps_greedy, gamma=gamma, lr=lr, m=m, eps=eps)
+
+    def get_action(self, state):
+        probs = self.eps_greedy(self.Q, state, self.eps, self.m, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)
 
 
-def train(agent, agent_name, h, w, n_episodes, save, verbosity):
+# TODO: implement sarsa, which runs better?
+def q_learning(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/qnet/{agent_name}/{agent_name}.pkl")
-        agent.trainer.Q.model = load_model(root_dir / f"agents/qnet/{agent_name}/{agent_name}_model.h5")
+        agent.Q.model = load_model(root_dir / f"agents/qnet/{agent_name}/{agent_name}_model.h5")
         print(f"Loaded agent {agent_name}")
     game = SnakeGame(w, h)
 
@@ -81,13 +90,18 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
         done = False
         state = agent.get_state(game)
         while not done:
-            # train
             action = agent.model.get_action(state)
             done, reward = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
-            agent.trainer.train_step(state, action, reward, next_state, done)
+            # train step
+            target = tf.unstack(agent.Q[state][0])
+            if done:
+                target[action] = reward
+            else:
+                target[action] = reward + agent.gamma * max(agent.Q[next_state][0])
+            agent.Q.model.fit(np.expand_dims(state, axis=0), np.array([target]), verbose=0)
             state = next_state
-        agent.model.n_games += 1
+        agent.n_games += 1
 
         # plot
         plot_scores.append(game.score)

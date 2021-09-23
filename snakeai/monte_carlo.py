@@ -3,10 +3,11 @@ from datetime import datetime
 from snakeai import root_dir
 from snakeai.base import AgentBase
 from snakeai.helper import plot, save_plot, read_from_file
-from snakeai.models import LinEpsDecay, SimpleEpsDecay, AdaptiveEps, FVMCTrainer
+from snakeai.model import LinEpsDecay, SimpleEpsDecay, AdaptiveEps
 from snakeai.snake_game import SnakeGame
 
 
+# TODO: add visit_counter to agent
 class AdaptiveMCAgent(AgentBase):
 
     def __init__(self, eps, p, f, gamma):
@@ -34,7 +35,7 @@ class LinMCAgent(AgentBase):
         super().__init__(model, trainer)
 
 
-def train(agent, agent_name, h, w, n_episodes, save, verbosity):
+def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):
     if (root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl").is_file():
         agent = read_from_file(root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl")
         print(f"Loaded agent {agent_name}")
@@ -46,8 +47,16 @@ def train(agent, agent_name, h, w, n_episodes, save, verbosity):
         # train
         game.reset()
         episode = game.play_episode(agent, verbosity>=2)
-        agent.trainer.train_step(episode)
-        agent.model.n_games += 1
+        # train step
+        total_reward = 0
+        for i in reversed(range(len(episode))):
+            state, action, reward = episode[i]
+            total_reward = agent.gamma * total_reward + reward
+            if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
+                agent.visit_counter[state][action] += 1
+                agent.Q[state][action] += (total_reward - agent.Q[state][action])\
+                    / agent.visit_counter[state][action]
+        agent.n_games += 1
 
         # plot
         plot_scores.append(game.score)

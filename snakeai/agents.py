@@ -1,5 +1,3 @@
-import numpy as np
-
 from base import AgentBase
 from snake_game import TILE_SIZE
 
