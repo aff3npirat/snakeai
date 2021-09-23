@@ -2,18 +2,18 @@ import math
 import numpy as np
 
 
-def simple_eps_decay(Q, state, eps, n_games):
+def simple_eps_decay(qs, eps, n_games):
     k = (n_games + 1) / 100
     probs = [eps / k, eps / k, eps / k, eps / k]
-    probs[np.argmax(Q[state])] = 1 - eps / k
+    probs[np.argmax(qs)] = 1 - eps / k
     return probs
 
 
-def lin_eps_decay(Q, state, eps, m, n_games):
+def lin_eps_decay(qs, eps, m, n_games):
     y_intersect = 50 / eps
     chance = (-m * n_games + y_intersect) / y_intersect
     probs = [chance, chance, chance, chance]
-    probs[np.argmax(Q[state])] = 1 - chance
+    probs[np.argmax(qs)] = 1 - chance
     return probs
 
 
@@ -27,10 +27,10 @@ class AdaptiveEps:
         self.max_prev = 0
         self.k = 0
 
-    def __call__(self, Q, state, eps, p, f):
-        greedy_action = np.argmax(Q[state])
+    def __call__(self, qs, state, eps, p, f):
+        greedy_action = np.argmax(qs)
         if np.random.uniform(0, 1) <= eps:
-            max_curr = Q[state][greedy_action]
+            max_curr = qs[greedy_action]
             self.k += 1
             new_eps = eps
             if self.k == p:

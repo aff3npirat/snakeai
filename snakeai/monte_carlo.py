@@ -2,8 +2,8 @@ from datetime import datetime
 
 from snakeai import root_dir
 from snakeai.base import AgentBase
-from snakeai.helper import plot, save_plot, read_from_file
-from snakeai.model import LinEpsDecay, SimpleEpsDecay, AdaptiveEps
+from snakeai.helper import plot, save_plot, read_from_file, write_to_file
+from snakeai.model import AdaptiveEps, lin_eps_decay, simple_eps_decay
 from snakeai.snake_game import SnakeGame
 
 
@@ -36,9 +36,13 @@ class LinMCAgent(AgentBase):
 
 
 def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):
-    if (root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl").is_file():
-        agent = read_from_file(root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.pkl")
+    agent_root = root_dir / f"agents/monte_carlo/{agent_name}"
+    if (agent_root / f"{agent_name}.pkl").is_file():
+        agent = read_from_file(agent_root / f"{agent_name}.pkl")
+        num_visits = read_from_file(agent_root / "num_visit.pkl")
         print(f"Loaded agent {agent_name}")
+    else:
+        num_visits = {}
     game = SnakeGame(w, h)
 
     plot_scores = []
@@ -53,9 +57,11 @@ def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):
             state, action, reward = episode[i]
             total_reward = agent.gamma * total_reward + reward
             if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
-                agent.visit_counter[state][action] += 1
+                if state not in num_visits:
+                    num_visits[state] = [0, 0, 0, 0]
+                num_visits[state][action] += 1
                 agent.Q[state][action] += (total_reward - agent.Q[state][action])\
-                    / agent.visit_counter[state][action]
+                    / num_visits[state][action]
         agent.n_games += 1
 
         # plot
@@ -67,8 +73,9 @@ def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):
             plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
-    save_plot(root_dir / f"agents/monte_carlo/{agent_name}/{agent_name}.png")
+    save_plot(agent_root / f"{agent_name}.png")
     if save:
-        agent.save(root_dir / f"agents/monte_carlo/{agent_name}", agent_name)
+        agent.save(agent_root, agent_name)
+        write_to_file(num_visits, agent_root / "num_visits.pkl")
         print(f"Saved agent {agent_name}")
     game.quit()

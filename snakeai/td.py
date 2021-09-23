@@ -16,9 +16,8 @@ class AdaptiveTDAgent(AgentBase):
     # noinspection PyAttributeOutsideInit
     def get_action(self, state):
         if state not in self.Q:
-            self.Q[state] = [0, 0, 0, 0]
-        # TODO: pass Q[state] instead of Q, increase in speed?
-        probs, self.eps = self.eps_greedy(self.Q, state, self.eps, self.p, self.f)
+            self.Q[state] = [[0], [0], [0], [0]]
+        probs, self.eps = self.eps_greedy(self.Q[state], state, self.eps, self.p, self.f)
         return random.choices([0, 1, 2, 3], weights=probs)
 
 
@@ -48,8 +47,9 @@ class LinTDAgent(AgentBase):
 
 # TODO: implement q-learning, which runs better?
 def sarsa(agent, agent_name, h, w, n_episodes, save, verbosity):
-    if (root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl").is_file():
-        agent = read_from_file(root_dir / f"agents/TD/{agent_name}/{agent_name}.pkl")
+    agent_root = root_dir / f"agents/TD/{agent_name}"
+    if (agent_root / f"{agent_name}.pkl").is_file():
+        agent = read_from_file(agent_root / f"{agent_name}.pkl")
         print(f"Loaded agent {agent_name}")
     game = SnakeGame(w, h)
 
@@ -58,16 +58,16 @@ def sarsa(agent, agent_name, h, w, n_episodes, save, verbosity):
     for k in range(1, n_episodes + 1):
         game.reset()
         state = agent.get_state(game)
-        action = agent.model.get_action(state)
+        action = agent.get_action(state)
         done = False
         while not done:
             reward, done = game.play_step(action, verbosity>=2)
             next_state = agent.get_state(game)
-            next_action = agent.model.get_action(state)
+            next_action = agent.get_action(state)
             # train step
-            target = reward + agent.gamma * agent.Q[next_state][next_action]
-            delta = target - agent.Q[state][action]
-            agent.Q[state][action] += agent.lr * delta
+            target = reward + agent.gamma * agent.Q[next_state][next_action][0]
+            delta = target - agent.Q[state][action][0]
+            agent.Q[state][action][0] += agent.lr * delta
         agent.n_games += 1
 
         # plot
@@ -79,8 +79,8 @@ def sarsa(agent, agent_name, h, w, n_episodes, save, verbosity):
             plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
-    save_plot(root_dir / f"agents/TD/{agent_name}/{agent_name}.png")
+    save_plot(agent_root / f"{agent_name}.png")
     if save:
-        agent.save(root_dir / f"agents/TD/{agent_name}", agent_name)
+        agent.save(agent_root, agent_name)
         print(f"Saved agent {agent_name}")
     game.quit()
