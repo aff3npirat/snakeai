@@ -30,8 +30,8 @@ def first_visit_mc(agent, agent_name, h, w, n_episodes, save, verbosity):
                 if state not in num_visits:
                     num_visits[state] = [0, 0, 0, 0]
                 num_visits[state][action] += 1
-                agent.Q[state][action] += (total_reward - agent.Q[state][action])\
-                    / num_visits[state][action]
+                agent.Q[state][action] += ((total_reward-agent.Q[state][action])
+                                           / num_visits[state][action])
         agent.n_games += 1
 
         # plot

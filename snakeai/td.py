@@ -17,8 +17,8 @@ class AdaptiveDecayAgent(AgentBase):
     def get_action(self, state):
         if state not in self.Q:
             self.Q[state] = [0, 0, 0, 0]
-        probs, self.eps = self.eps_greedy(self.Q[state], state, self.eps, self.p, self.f)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        probs, self.eps = self.eps_greedy(self.Q[state], self.eps, self.p, self.f)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 class SimpleDecayAgent(AgentBase):
@@ -29,8 +29,8 @@ class SimpleDecayAgent(AgentBase):
     def get_action(self, state):
         if state not in self.Q:
             self.Q[state] = [0, 0, 0, 0]
-        probs = self.eps_greedy(self.Q, state, self.eps, self.n_games)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        probs = self.eps_greedy(self.Q[state], self.eps, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 class LinDecayAgent(AgentBase):
@@ -41,8 +41,8 @@ class LinDecayAgent(AgentBase):
     def get_action(self, state):
         if state not in self.Q:
             self.Q[state] = [0, 0, 0, 0]
-        probs = self.eps_greedy(self.Q, state, self.eps, self.m, self.n_games)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        probs = self.eps_greedy(self.Q[state], self.eps, self.m, self.n_games)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 # TODO: implement q-learning, which runs better?

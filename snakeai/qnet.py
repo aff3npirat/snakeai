@@ -41,7 +41,7 @@ class AdaptiveQnetAgent(QNetAgentBase):
     # noinspection PyAttributeOutsideInit
     def get_action(self, state):
         probs, self.eps = self.eps_greedy(self.Q(state), self.eps, self.p, self.f)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 class SimpleQNetAgent(QNetAgentBase):
@@ -58,7 +58,7 @@ class SimpleQNetAgent(QNetAgentBase):
 
     def get_action(self, state):
         probs = self.eps_greedy(self.Q(state), self.eps, self.n_games)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 class LinQNetAgent(QNetAgentBase):
@@ -74,7 +74,7 @@ class LinQNetAgent(QNetAgentBase):
 
     def get_action(self, state):
         probs = self.eps_greedy(self.Q(state), self.eps, self.m, self.n_games)
-        return random.choices([0, 1, 2, 3], weights=probs)
+        return random.choices([0, 1, 2, 3], weights=probs)[0]
 
 
 # TODO: implement sarsa, which runs better?
