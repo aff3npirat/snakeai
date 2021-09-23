@@ -102,7 +102,7 @@ class SnakeGame:
         done = False
         while not done:
             state = agent.get_state(self)
-            action = agent.eps_greedy.get_action(state)
+            action = agent.get_action(state)
             done, reward = self.play_step(Direction(action), render)
             episode.append((state, action, reward))
         return episode
