@@ -21,9 +21,16 @@ def markov_property(game):
         for y in range(game.y_tiles):
             if game.head_position[0] // TILE_SIZE == x and game.head_position[1] // TILE_SIZE == y:
                 state += (1,)
-            else
-
-
+            else:
+                val = 0
+                for i in range(len(game.body_position)):
+                    point_x = game.body_position[i][0] // TILE_SIZE
+                    point_y = game.body_position[i][1] // TILE_SIZE
+                    if point_x == x and point_y == y:
+                        val = 2
+                        break
+                state += (val,)
+    return state
 
 
 def short_sighted(game):
@@ -73,11 +80,17 @@ def short_sighted(game):
 
 # eps decays
 def simple_eps_decay(action_values, params):
-    k = (params['n_games'] + 1) / 100
-    prob = params['eps'] / k
-    action_probs = [prob, prob, prob, prob]
-    action_probs[np.argmax(action_values)] = 1 - prob
-    return action_probs
+    if not any(action_values):
+        return [1, 1, 1, 1]
+    else:
+        greedy_action = np.argmax(action_values)
+        if params['n_games'] >= 100:
+            prob_explore = 0
+        else:
+            prob_explore = (100-params['n_games']) / 100
+        action_probs = [prob_explore for _ in range(4)]
+        action_probs[greedy_action] = 1 - prob_explore
+        return action_probs
 
 
 def lin_eps_decay(action_values, params):
