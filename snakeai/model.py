@@ -5,6 +5,27 @@ from snakeai.snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
 
 
 # game to state functions
+def markov_property(game):
+    dir_u = game.direction == UP
+    dir_d = game.direction == DOWN
+    dir_l = game.direction == LEFT
+    dir_r = game.direction == RIGHT
+
+    state = (dir_u, dir_d, dir_l, dir_r,
+             game.food_position[1] < game.head_position[1],
+             game.food_position[1] > game.head_position[1],
+             game.food_position[0] < game.head_position[1],
+             game.food_position[0] > game.head_position[0])
+
+    for x in range(game.x_tiles):
+        for y in range(game.y_tiles):
+            if game.head_position[0] // TILE_SIZE == x and game.head_position[1] // TILE_SIZE == y:
+                state += (1,)
+            else
+
+
+
+
 def short_sighted(game):
     dir_u = game.direction == UP
     dir_d = game.direction == DOWN
