@@ -1,15 +1,15 @@
 import math
 import numpy as np
 
-from snakeai.snake_game import TILE_SIZE
+from snakeai.snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
 
 
 # game to state functions
 def short_sighted(game):
-    dir_u = game.direction.value == 0  # Direction.UP
-    dir_d = game.direction.value == 1  # Direction.DOWN
-    dir_l = game.direction.value == 2  # Direction.LEFT
-    dir_r = game.direction.value == 3  # Direction.RIGHT
+    dir_u = game.direction == UP
+    dir_d = game.direction == DOWN
+    dir_l = game.direction == LEFT
+    dir_r = game.direction == RIGHT
 
     pos_u = [game.head_position[0], game.head_position[1] - TILE_SIZE]
     pos_d = [game.head_position[0], game.head_position[1] + TILE_SIZE]
