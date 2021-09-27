@@ -2,22 +2,20 @@ import sys
 import pygame
 import random
 
-from enum import Enum
 
+# movement directions
+UP = 0
+DOWN = 1
+LEFT = 2
+RIGHT = 3
 
-class Direction(Enum):
-    UP = 0
-    DOWN = 1
-    LEFT = 2
-    RIGHT = 3
-
-
+# colors
 BLACK = pygame.Color(0, 0, 0)
 WHITE = pygame.Color(255, 255, 255)
 RED = pygame.Color(255, 0, 0)
 GREEN = pygame.Color(0, 255, 0)
-BLUE = pygame.Color(0, 0, 255)
 
+# game properties
 TILE_SIZE = 10
 SNAKE_SIZE = 8
 SPEED = 30
@@ -31,7 +29,7 @@ class SnakeGame:
         self.fps = pygame.time.Clock()
         pygame.init()
         pygame.display.set_caption("Snake Game")
-        self.direction = Direction.RIGHT
+        self.direction = RIGHT
         self.head_position = []
         self.body_position = []
         self.food_position = []
@@ -39,8 +37,9 @@ class SnakeGame:
         self.n_steps = 0
         self.reset()
 
+    # TODO: on each reset, snake should move in a random direction
     def reset(self):
-        self.direction = Direction.RIGHT
+        self.direction = RIGHT
         self.score = 0
         self.n_steps = 0
         self.head_position = [(self.x_tiles // 2) * TILE_SIZE, (self.y_tiles // 2) * TILE_SIZE]
@@ -59,22 +58,22 @@ class SnakeGame:
 
         self.body_position.insert(0, list(self.head_position))
 
-        if action == Direction.UP and not self.direction == Direction.DOWN:
+        if action == UP and not self.direction == DOWN:
             self.direction = action
-        elif action == Direction.DOWN and not self.direction == Direction.UP:
+        elif action == DOWN and not self.direction == UP:
             self.direction = action
-        elif action == Direction.LEFT and not self.direction == Direction.RIGHT:
+        elif action == LEFT and not self.direction == RIGHT:
             self.direction = action
-        elif action == Direction.RIGHT and not self.direction == Direction.LEFT:
+        elif action == RIGHT and not self.direction == LEFT:
             self.direction = action
 
-        if self.direction == Direction.UP:
+        if self.direction == UP:
             self.head_position[1] -= TILE_SIZE
-        elif self.direction == Direction.DOWN:
+        elif self.direction == DOWN:
             self.head_position[1] += TILE_SIZE
-        elif self.direction == Direction.LEFT:
+        elif self.direction == LEFT:
             self.head_position[0] -= TILE_SIZE
-        elif self.direction == Direction.RIGHT:
+        elif self.direction == RIGHT:
             self.head_position[0] += TILE_SIZE
 
         reward = 0
@@ -96,16 +95,6 @@ class SnakeGame:
             self.update_ui()
             self.fps.tick(SPEED)
         return [False, reward]
-
-    def play_episode(self, agent, render):
-        episode = []
-        done = False
-        while not done:
-            state = agent.get_state(self)
-            action = agent.get_action(state)
-            done, reward = self.play_step(Direction(action), render)
-            episode.append((state, action, reward))
-        return episode
 
     def is_collision(self, point) -> bool:
         w = self.x_tiles * TILE_SIZE
