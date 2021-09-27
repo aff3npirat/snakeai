@@ -82,22 +82,27 @@ def short_sighted(game):
 def simple_eps_decay(action_values, params):
     if not any(action_values):
         return [1, 1, 1, 1]
+
+    greedy_action = np.argmax(action_values)
+    if params['n_games'] >= 100:
+        prob_explore = 0
     else:
-        greedy_action = np.argmax(action_values)
-        if params['n_games'] >= 100:
-            prob_explore = 0
-        else:
-            prob_explore = (100-params['n_games']) / 100
-        action_probs = [prob_explore for _ in range(4)]
-        action_probs[greedy_action] = 1 - prob_explore
-        return action_probs
+        prob_explore = (100-params['n_games']) / 100
+    action_probs = [prob_explore for _ in range(4)]
+    action_probs[greedy_action] = 1 - prob_explore
+    return action_probs
 
 
 def lin_eps_decay(action_values, params):
-    y_intersect = 50 / params['eps']
-    prob = (-params['m'] * params['n_games'] + y_intersect) / y_intersect
-    action_probs = [prob, prob, prob, prob]
-    action_probs[np.argmax(action_values)] = 1 - prob
+    if not any(action_values):
+        return [1, 1, 1, 1]
+
+    greedy_action = np.argmax(action_values)
+    prob_explore = -params['m'] * params['n_games'] + 1
+    if prob_explore < 0:
+        prob_explore = 0
+    action_probs = [prob_explore for _ in range(4)]
+    action_probs[greedy_action] = 1 - prob_explore
     return action_probs
 
 
