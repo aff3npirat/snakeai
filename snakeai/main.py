@@ -7,12 +7,11 @@ from snakeai.snake_game import SnakeGame
 
 
 # TODO: testing
-def train(agent=None, agent_name=None, get_state=None, eps_greedy=None, h=20, w=20, n_episodes=1,
+def train(agent=None, agent_file=None, get_state=None, eps_greedy=None, h=20, w=20, n_episodes=1,
           save=True, verbosity=3):
-    agent_root = root_dir / f"agents/TD/{agent_name}"
-    if (agent_root / f"{agent_name}.pkl").is_file():
-        agent = read_from_file(agent_root / f"{agent_name}.pkl")
-        print(f"Loaded agent {agent_name}")
+    if agent_file is not None and (root_dir / "agents" / agent_file).is_file():
+        agent = read_from_file(root_dir / "agents" / agent_file)
+        print(f"Loaded agent {agent.name}")
     game = SnakeGame(w, h)
 
     def get_action(state):
@@ -33,8 +32,7 @@ def train(agent=None, agent_name=None, get_state=None, eps_greedy=None, h=20, w=
             plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
-    save_plot(agent_root / f"{agent.name}.png")
+    save_plot(root_dir / f"agents/{agent.name}.png")
     if save:
-        agent.save(agent_root)
-        print(f"Saved agent {agent.name}")
+        agent.save(root_dir / "agents")
     game.quit()
