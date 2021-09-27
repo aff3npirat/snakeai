@@ -21,7 +21,7 @@ SPEED = 30
 
 
 class SnakeGame:
-    def __init__(self, x_tiles: int = 72, y_tiles: int = 48):
+    def __init__(self, x_tiles, y_tiles):
         self.x_tiles = x_tiles
         self.y_tiles = y_tiles
         self.game_window = pygame.display.set_mode((self.x_tiles * TILE_SIZE, self.y_tiles * TILE_SIZE))
@@ -95,7 +95,7 @@ class SnakeGame:
             self.fps.tick(SPEED)
         return [False, reward]
 
-    def is_collision(self, point) -> bool:
+    def is_collision(self, point):
         w = self.x_tiles * TILE_SIZE
         h = self.y_tiles * TILE_SIZE
         if point[0] < 0 or point[0] > w - TILE_SIZE:
