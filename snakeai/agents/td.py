@@ -17,7 +17,7 @@ class TDSarsa:
         state = get_state(game)
         action = get_action(state)
         while not done:
-            reward, done = game.play_step(action, render)
+            done, reward = game.play_step(action, render)
             next_state = get_state(game)
             next_action = get_action(state)
             target = reward + self.params['gamma'] * self.Q[next_state][next_action]
