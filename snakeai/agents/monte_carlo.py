@@ -26,10 +26,6 @@ class FirstVisitMC:
         for i in reversed(range(len(episode))):
             state, action, reward = episode[i]
 
-            # if state not in self.Q:
-            #     self.Q[state] = [0, 0, 0, 0]
-            #     self.num_visits[state] = [0, 0, 0, 0]
-
             total_reward = self.params['gamma'] * total_reward + reward
             if (state, action) not in [(s, a) for s, a, _ in episode[0:i]]:
                 self.num_visits[state][action] += 1

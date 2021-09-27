@@ -15,18 +15,10 @@ class TDSarsa:
         game.reset()
         done = False
         state = get_state(game)
-        # if state not in self.Q:
-        #     self.Q[state] = [0, 0, 0, 0]
         action = get_action(state)
         while not done:
             reward, done = game.play_step(action, render)
             next_state = get_state(game)
-
-            # if state not in self.Q:
-            #     self.Q[state] = [0, 0, 0, 0]
-            # if next_state not in self.Q:
-            #     self.Q[next_state] = [0, 0, 0, 0]
-
             next_action = get_action(state)
             target = reward + self.params['gamma'] * self.Q[next_state][next_action]
             delta = target - self.Q[state][action]
