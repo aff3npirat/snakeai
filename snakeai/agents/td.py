@@ -19,10 +19,12 @@ class TDSarsa:
         while not done:
             done, reward = game.play_step(action, render)
             next_state = get_state(game)
-            next_action = get_action(state)
+            next_action = get_action(next_state)
             target = reward + self.params['gamma'] * self.Q[next_state][next_action]
             delta = target - self.Q[state][action]
             self.Q[state][action] += self.params['lr'] * delta
+            state = next_state
+            action = next_action
         self.params['n_games'] += 1
 
     def save(self, agents_dir):
