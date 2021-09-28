@@ -78,6 +78,7 @@ class SnakeGame:
         reward = 0
         if self.head_position == self.food_position:
             self.score += 1
+            self.n_steps = 0
             reward += 10
             self.food_position = [random.randrange(1, self.x_tiles) * TILE_SIZE, random.randrange(1, self.y_tiles) * TILE_SIZE]
         else:
@@ -86,7 +87,7 @@ class SnakeGame:
         if len(self.body_position)+1 == self.x_tiles * self.y_tiles:
             reward += 15
             return [True, reward]
-        if self.is_collision(self.head_position) or self.n_steps == (len(self.body_position)+1) * 100:
+        if self.is_collision(self.head_position) or self.n_steps == self.x_tiles * self.y_tiles:
             reward -= 10
             return [True, reward]
 
@@ -96,13 +97,18 @@ class SnakeGame:
         return [False, reward]
 
     def is_collision(self, point):
+        return self.out_of_bounds(point) or self.is_body_position(point)
+
+    def is_body_position(self, point):
+        return point in self.body_position
+
+    def out_of_bounds(self, point):
         w = self.x_tiles * TILE_SIZE
         h = self.y_tiles * TILE_SIZE
         if point[0] < 0 or point[0] > w - TILE_SIZE:
             return True
         if point[1] < 0 or point[1] > h - TILE_SIZE:
             return True
-        return point in self.body_position
 
     def update_ui(self):
         self.game_window.fill(BLACK)
