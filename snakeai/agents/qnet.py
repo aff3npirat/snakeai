@@ -29,7 +29,7 @@ class QNetLearning:
     def __init__(self, params, name, view, eps_greedy):
         params["n_games"] = 0
         self.params = params
-        self.Q = QNet(params['hidden_size'], 3, params['lr'])
+        self.Q = QNet(params['hidden_size'], 4, params['lr'])
         self.name = name
         self.qnet_file = None
         self.view = view
