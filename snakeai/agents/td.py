@@ -7,6 +7,7 @@ from snakeai.helper import write_to_file, dict_to_str, default_value
 class TDSarsa:
 
     def __init__(self, params, name):
+        params["n_games"] = 0
         self.params = params
         self.Q = defaultdict(default_value)
         self.name = name

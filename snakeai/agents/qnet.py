@@ -10,9 +10,9 @@ from snakeai.helper import dict_to_str, write_to_file
 class QNet:
 
     # TODO: remove in_size, keras.Seqeuntial can infer input size from first input
-    def __init__(self, in_size, hidden_size, out_size, lr, loss=keras.losses.MeanSquaredError()):
+    def __init__(self, hidden_size, out_size, lr, loss=keras.losses.MeanSquaredError()):
         self.model = keras.Sequential([
-            layers.Dense(hidden_size, activation="relu", name="hidden", input_dim=in_size),
+            layers.Dense(hidden_size, activation="relu", name="hidden"),
             layers.Dense(out_size, name="out")
         ])
         self.model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss=loss)
@@ -25,15 +25,16 @@ class QNet:
 class QNetLearning:
 
     def __init__(self, params, name):
+        params["n_games"] = 0
         self.params = params
-        self.Q = QNet(params['in_size'], params['hidden_size'], params['out_size'], params['lr'])
+        self.Q = QNet(params['hidden_size'], 4, params['lr'])
         self.name = name
         self.qnet_file = None
 
     def train_episode(self, game, get_state, get_action, render):
         game.reset()
-        state = get_state(game)
         done = False
+        state = get_state(game)
         while not done:
             action = get_action(state)
             done, reward = game.play_step(action, render)
@@ -55,7 +56,9 @@ class QNetLearning:
         self.Q.model.save(self.qnet_file)
         self.Q.model = None
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
-        write_to_file(dict_to_str(self.params), save_dir / f"{self.name}.yml", text=True)
+        info = (f"{type(self).__name__}\n"
+                f"{dict_to_str(self.params)}")
+        write_to_file(info, save_dir / f"{self.name}.yml", text=True)
         print(f"Saved {self.name} to '{save_dir}'")
 
     def __setstate__(self, state):
