@@ -1,3 +1,4 @@
+import random
 from collections import defaultdict
 
 from snakeai.helper import default_value, dict_to_str, write_to_file
@@ -6,20 +7,29 @@ from snakeai.helper import default_value, dict_to_str, write_to_file
 # TODO: EveryVisitMC
 class FirstVisitMC:
 
-    def __init__(self, params, name):
+    def __init__(self, params, name, view, eps_greedy):
         params["n_games"] = 0
         self.params = params
         self.name = name
         self.Q = defaultdict(default_value)
         self.num_visits = defaultdict(default_value)
+        self.view = view
+        self.eps_greedy = eps_greedy
 
-    def train_episode(self, game, get_state, get_action, render):
+    def get_action(self, state):
+        action_probs = self.eps_greedy(self.Q[state], self.params)
+        return random.choices([0, 1, 2, 3], weights=action_probs)
+
+    def get_state(self, game):
+        return self.view(game, self.params)
+
+    def train_episode(self, game, render):
         game.reset()
         episode = []
         done = False
         while not done:
-            state = get_state(game)
-            action = get_action(state)
+            state = self.get_state(game)
+            action = self.get_action(state)
             done, reward = game.play_step(action, render)
             episode.append((state, action, reward))
         self.params['n_games'] += 1

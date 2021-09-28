@@ -9,7 +9,6 @@ from snakeai.helper import dict_to_str, write_to_file
 
 class QNet:
 
-    # TODO: remove in_size, keras.Seqeuntial can infer input size from first input
     def __init__(self, hidden_size, out_size, lr, loss=keras.losses.MeanSquaredError()):
         self.model = keras.Sequential([
             layers.Dense(hidden_size, activation="relu", name="hidden"),
@@ -24,12 +23,20 @@ class QNet:
 # TODO: QNetSarsa
 class QNetLearning:
 
-    def __init__(self, params, name):
+    def __init__(self, params, name, view, eps_greedy):
         params["n_games"] = 0
         self.params = params
         self.Q = QNet(params['hidden_size'], 4, params['lr'])
         self.name = name
         self.qnet_file = None
+        self.view = view
+        self.eps_greedy = eps_greedy
+
+    def get_action(self, state):
+
+
+    def get_state(self, game):
+        return self.view(game, self.params)
 
     def train_episode(self, game, get_state, get_action, render):
         game.reset()
