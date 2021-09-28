@@ -1,3 +1,5 @@
+import random
+
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
@@ -26,26 +28,27 @@ class QNetLearning:
     def __init__(self, params, name, view, eps_greedy):
         params["n_games"] = 0
         self.params = params
-        self.Q = QNet(params['hidden_size'], 4, params['lr'])
+        self.Q = QNet(params['hidden_size'], 3, params['lr'])
         self.name = name
         self.qnet_file = None
         self.view = view
         self.eps_greedy = eps_greedy
 
     def get_action(self, state):
-
+        action_probs = self.eps_greedy(self.Q[state], self.params)
+        return random.choices([0, 1, 2, 3], weights=action_probs)
 
     def get_state(self, game):
         return self.view(game, self.params)
 
-    def train_episode(self, game, get_state, get_action, render):
+    def train_episode(self, game, render):
         game.reset()
         done = False
-        state = get_state(game)
+        state = self.get_state(game)
         while not done:
-            action = get_action(state)
+            action = self.get_action(state)
             done, reward = game.play_step(action, render)
-            next_state = get_state(game)
+            next_state = self.get_state(game)
             # output of qnet has shape (1, 4)
             target = tf.unstack(self.Q[state])
             if done:

@@ -4,7 +4,7 @@ from snakeai.snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
 
 
 # game to state functions
-def markov_property(game, params):
+def markov_property(game):
     dir_u = game.direction == UP
     dir_d = game.direction == DOWN
     dir_l = game.direction == LEFT
@@ -32,7 +32,7 @@ def markov_property(game, params):
     return state
 
 
-def short_sighted(game, params):
+def short_sighted(game):
     dir_u = game.direction == UP
     dir_d = game.direction == DOWN
     dir_l = game.direction == LEFT

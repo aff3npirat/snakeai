@@ -21,7 +21,7 @@ class FirstVisitMC:
         return random.choices([0, 1, 2, 3], weights=action_probs)
 
     def get_state(self, game):
-        return self.view(game, self.params)
+        return self.view(game)
 
     def train_episode(self, game, render):
         game.reset()
