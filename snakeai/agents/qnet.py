@@ -24,6 +24,8 @@ class QNet:
 
 
 # TODO: QNetSarsa
+# TODO: test if qnet (without memory train) converges for lr=0.001
+# TODO: compare training speed: pytorch vs keras
 class QNetLearning:
 
     def __init__(self, params, name, view, eps_greedy):
