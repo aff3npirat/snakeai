@@ -33,8 +33,8 @@ def train(agent=None, agent_file=None, get_state=None, eps_greedy=None, h=20, w=
             plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
-    save_plot(root_dir / f"agents/{agent.name}.png")
+    save_plot(root_dir / f"agents/{agent.name}/{agent.name}.png")
     if save:
-        agent.save(root_dir / "agents")
+        agent.save(root_dir / f"agents/{agent.name}")
     pygame.quit()
     plt.close()

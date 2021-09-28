@@ -27,8 +27,7 @@ class TDSarsa:
             action = next_action
         self.params['n_games'] += 1
 
-    def save(self, agents_dir):
-        save_dir = agents_dir / f"TD/{self.name}"
+    def save(self, save_dir):
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
         write_to_file(dict_to_str(self.params), save_dir / f"{self.name}.yml", text=True)
         print(f"Saved {self.name} to '{save_dir}'")

@@ -32,8 +32,7 @@ class FirstVisitMC:
                 self.Q[state][action] += ((total_reward - self.Q[state][action])
                                           / self.num_visits[state][action])
 
-    def save(self, agents_dir):
-        save_dir = agents_dir / f"monte_carlo/{self.name}"
+    def save(self, save_dir):
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
         write_to_file(dict_to_str(self.params), save_dir / f"{self.name}.yml", text=True)
         print(f"Saved {self.name} to '{save_dir}'")

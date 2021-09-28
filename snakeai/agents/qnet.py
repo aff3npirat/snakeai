@@ -50,8 +50,7 @@ class QNetLearning:
             state = next_state
         self.params['n_games'] += 1
 
-    def save(self, agents_dir):
-        save_dir = agents_dir / f"qnet/{self.name}"
+    def save(self, save_dir):
         self.qnet_file = save_dir / f"{self.name}_model"
         self.Q.model.save(self.qnet_file)
         self.Q.model = None
