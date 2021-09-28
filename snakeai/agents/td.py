@@ -29,5 +29,7 @@ class TDSarsa:
 
     def save(self, save_dir):
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
-        write_to_file(dict_to_str(self.params), save_dir / f"{self.name}.yml", text=True)
+        info = (f"{type(self).__name__}\n"
+                f"{dict_to_str(self.params)}")
+        write_to_file(info, save_dir / f"{self.name}.yml", text=True)
         print(f"Saved {self.name} to '{save_dir}'")

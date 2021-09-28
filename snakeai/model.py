@@ -19,14 +19,14 @@ def markov_property(game):
     for x in range(game.x_tiles):
         for y in range(game.y_tiles):
             if game.head_position[0] // TILE_SIZE == x and game.head_position[1] // TILE_SIZE == y:
-                state += (True,)
+                state += (1,)
             else:
-                val = False
+                val = 0
                 for i in range(len(game.body_position)):
                     point_x = game.body_position[i][0] // TILE_SIZE
                     point_y = game.body_position[i][1] // TILE_SIZE
                     if point_x == x and point_y == y:
-                        val = True
+                        val = 2
                         break
                 state += (val,)
     return state
