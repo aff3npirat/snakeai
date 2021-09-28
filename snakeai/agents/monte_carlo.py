@@ -18,7 +18,7 @@ class FirstVisitMC:
 
     def get_action(self, state):
         action_probs = self.eps_greedy(self.Q[state], self.params)
-        return random.choices([0, 1, 2, 3], weights=action_probs)
+        return random.choices([0, 1, 2, 3], weights=action_probs)[0]
 
     def get_state(self, game):
         return self.view(game)
