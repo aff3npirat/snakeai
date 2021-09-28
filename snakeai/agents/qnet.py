@@ -1,4 +1,5 @@
 import random
+from collections import deque
 
 import numpy as np
 import tensorflow as tf
@@ -33,6 +34,7 @@ class QNetLearning:
         self.qnet_file = None
         self.view = view
         self.eps_greedy = eps_greedy
+        self.memory = deque(maxlen=100_000)
 
     def get_action(self, state):
         action_probs = self.eps_greedy(self.Q[state], self.params)
@@ -49,17 +51,25 @@ class QNetLearning:
             action = self.get_action(state)
             done, reward = game.play_step(action, render)
             next_state = self.get_state(game)
+            # train on time step
+            self._train([state], [action], [reward], [next_state], [done], 1)
+            self.memory.append((state, action, reward, next_state, done))
+            state = next_state
+        # train on full memory
+        self._train(*list(zip(*self.memory)), 1000)
+        self.params['n_games'] += 1
+
+    def _train(self, states, actions, rewards, next_states, dones, batch_size):
+        for state, action, reward, next_state, done in zip(states, actions, rewards, next_states,
+                                                           dones):
             # output of qnet has shape (1, 4)
             target = tf.unstack(self.Q[state])
-            if done:
-                target[action] = reward
-            else:
-                target[action] = reward + self.params['gamma'] * max(self.Q[next_state])
+            target[action] = reward
+            if not done:
+                target[action] += self.params['gamma'] * max(self.Q[next_state])
             state_arr = np.array([state], dtype=int)
-            target_arr = np.array([target], dtype=float)
-            self.Q.model.fit(state_arr, target_arr, verbose=0)
-            state = next_state
-        self.params['n_games'] += 1
+            target_arr = np.array([target], dtype=int)
+            self.Q.model.fit(state_arr, target_arr, batch_size=batch_size, verbose=0)
 
     def save(self, save_dir):
         self.qnet_file = save_dir / f"{self.name}_model"
