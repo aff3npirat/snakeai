@@ -1,4 +1,3 @@
-import math
 import numpy as np
 
 from snakeai.snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
@@ -20,14 +19,14 @@ def markov_property(game):
     for x in range(game.x_tiles):
         for y in range(game.y_tiles):
             if game.head_position[0] // TILE_SIZE == x and game.head_position[1] // TILE_SIZE == y:
-                state += (1,)
+                state += (True,)
             else:
-                val = 0
+                val = False
                 for i in range(len(game.body_position)):
                     point_x = game.body_position[i][0] // TILE_SIZE
                     point_y = game.body_position[i][1] // TILE_SIZE
                     if point_x == x and point_y == y:
-                        val = 2
+                        val = True
                         break
                 state += (val,)
     return state
@@ -103,4 +102,14 @@ def lin_eps_decay(action_values, params):
         prob_explore = 0
     action_probs = [prob_explore for _ in range(4)]
     action_probs[greedy_action] = 1 - prob_explore
+    return action_probs
+
+
+def eps_greedy(action_values, params):
+    if not any(action_values):
+        return [1, 1, 1, 1]
+
+    greedy_action = np.argmax(action_values)
+    action_probs = [params['eps'] for _ in range(4)]
+    action_probs[greedy_action] = 1 - params['eps']
     return action_probs
