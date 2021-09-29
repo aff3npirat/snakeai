@@ -1,8 +1,9 @@
 import numpy as np
 import random
+import torch
+from collections import deque
 from torch import nn, optim
 from torch.nn import functional
-from collections import deque
 
 
 from snakeai.helper import dict_to_str, write_to_file
@@ -35,6 +36,8 @@ class QNetLearning:
         self.view = view
         self.eps_greedy = eps_greedy
         self.memory = deque(maxlen=100_000)
+        self.optimizer = optim.Adam(self.Q.parameters(), lr=params['lr'])
+        self.criterion = nn.MSELoss()
 
     def get_action(self, state):
         action_probs = self.eps_greedy(self.Q[state], self.params)
@@ -56,21 +59,45 @@ class QNetLearning:
             self.memory.append((state, action, reward, next_state, done))
             state = next_state
         # train on full memory
-        self._train(*list(zip(*self.memory)), batch_size=1000)
+        self._train_long_memory(1000)
         self.params['n_games'] += 1
 
-    def _train(self, states, actions, rewards, next_states, dones, batch_size=1):
-        for state, action, reward, next_state, done in zip(states, actions, rewards, next_states,
-                                                           dones):
-            if len(np.shape)
-            # output of qnet has shape (1, 4)
-            pred = self.Q.forward(state)
-            target = pred.clone()
+    def _train_long_memory(self, batch_size):
+        if len(self.memory) > batch_size:
+            mini_samples = random.sample(self.memory, batch_size)
+        else:
+            mini_samples = self.memory
+
+        states, actions, rewards, next_states, dones = zip(*mini_samples)
+        self._train(states, actions, rewards, next_states, dones)
+
+    def _train(self, states, actions, rewards, next_states, dones):
+        states = torch.tensor(states, dtype=torch.float)
+        actions = torch.tensor(actions, dtype=torch.float)
+        rewards = torch.tensor(rewards, dtype=torch.float)
+        next_states = torch.tensor(next_states, dtype=torch.float)
+
+        if len(states.shape) == 1:
+            states = torch.unsqueeze(states, 0)
+            actions = torch.unsqueeze(actions, 0)
+            rewards = torch.unsqueeze(rewards, 0)
+            next_states = torch.unsqueeze(next_states, 0)
+            dones = (dones, )
+
+        pred = self.Q(states)
+        target = pred.clone()
+        for i in range(len(dones)):
+            if dones[i]:
+                target[i][actions[i]] = rewards[i]
+            else:
+                target[i][actions[i]] = rewards[i] + self.params['gamma'] * max(self.Q(next_states))
+
+        self.Q.zero_grad()  # clears gradient buffers
+        loss = self.criterion(pred, target)
+        loss.backward()
+        self.optimizer.step()
 
     def save(self, save_dir):
-        self.qnet_file = save_dir / f"{self.name}_model"
-        self.Q.model.save(self.qnet_file)
-        self.Q.model = None
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
         info = (f"{type(self).__name__}\n"
                 f"({self.eps_greedy.__name__}/{self.view.__name__})\n"
@@ -80,4 +107,3 @@ class QNetLearning:
 
     def __setstate__(self, state):
         self.__dict__.update(state)
-        self.Q.model = load_model(self.qnet_file)
