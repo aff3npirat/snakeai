@@ -1,0 +1,11 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+
+# My ignored files
+agents/*
+plots/*
+*.pyc
+*.egg-info/
+/.idea
+
