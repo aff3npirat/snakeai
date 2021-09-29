@@ -17,14 +17,14 @@ def train(agent=None, agent_file=None, h=20, w=20, n_episodes=1, save=True, verb
     plot_scores = []
     plot_mean_scores = []
     for k in range(1, n_episodes + 1):
-        agent.train_episode(game, verbose>=2)
+        agent.train_episode(game, verbose>=3)
 
         # plot
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
-        if k % 1000 == 0:
+        if verbose >= 1 and k % 1000 == 0:
             print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{n_episodes}")
-        if verbose >= 1:
+        if verbose >= 2:
             plot(plot_scores, plot_mean_scores)
     # save
     plot(plot_scores, plot_mean_scores)
