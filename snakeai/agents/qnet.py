@@ -1,26 +1,25 @@
+import numpy as np
 import random
+from torch import nn, optim
+from torch.nn import functional
 from collections import deque
 
-import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from keras import layers
-from keras.models import load_model
 
 from snakeai.helper import dict_to_str, write_to_file
 
 
-class QNet:
+class QNet(nn.Module):
 
-    def __init__(self, hidden_size, out_size, lr, loss=keras.losses.MeanSquaredError()):
-        self.model = keras.Sequential([
-            layers.Dense(hidden_size, activation="relu", name="hidden"),
-            layers.Dense(out_size, name="out")
-        ])
-        self.model.compile(optimizer=keras.optimizers.Adam(learning_rate=lr), loss=loss)
+    def __init__(self, in_size, hidden_size, out_size):
+        super().__init__()
+        self.hidden = nn.Linear(in_size, hidden_size)
+        self.out = nn.Linear(hidden_size, out_size)
 
-    def __getitem__(self, state):
-        return self.model(np.array([state], dtype=int))[0]
+    def forward(self, x):
+        x = functional.relu(self.hidden(x))
+        x = self.out(x)
+        assert len(np.shape(x)) == 1, f"output shape is {np.shape(x)}"
+        return x
 
 
 # TODO: QNetSarsa
@@ -31,9 +30,8 @@ class QNetLearning:
     def __init__(self, params, name, view, eps_greedy):
         params["n_games"] = 0
         self.params = params
-        self.Q = QNet(params['hidden_size'], 4, params['lr'])
+        self.Q = QNet(params['in_size'], params['hidden_size'], 4)
         self.name = name
-        self.qnet_file = None
         self.view = view
         self.eps_greedy = eps_greedy
         self.memory = deque(maxlen=100_000)
@@ -54,24 +52,20 @@ class QNetLearning:
             done, reward = game.play_step(action, render)
             next_state = self.get_state(game)
             # train on time step
-            self._train([state], [action], [reward], [next_state], [done], 1)
+            self._train(state, action, reward, next_state, done)
             self.memory.append((state, action, reward, next_state, done))
             state = next_state
         # train on full memory
-        self._train(*list(zip(*self.memory)), 1000)
+        self._train(*list(zip(*self.memory)), batch_size=1000)
         self.params['n_games'] += 1
 
-    def _train(self, states, actions, rewards, next_states, dones, batch_size):
+    def _train(self, states, actions, rewards, next_states, dones, batch_size=1):
         for state, action, reward, next_state, done in zip(states, actions, rewards, next_states,
                                                            dones):
+            if len(np.shape)
             # output of qnet has shape (1, 4)
-            target = tf.unstack(self.Q[state])
-            target[action] = reward
-            if not done:
-                target[action] += self.params['gamma'] * max(self.Q[next_state])
-            state_arr = np.array([state], dtype=int)
-            target_arr = np.array([target], dtype=int)
-            self.Q.model.fit(state_arr, target_arr, batch_size=batch_size, verbose=0)
+            pred = self.Q.forward(state)
+            target = pred.clone()
 
     def save(self, save_dir):
         self.qnet_file = save_dir / f"{self.name}_model"
