@@ -22,7 +22,7 @@ class QNet(nn.Module):
     def __getitem__(self, item):
         item = torch.tensor(item, dtype=torch.float)
         if len(item.shape) != 1:
-            raise ValueError(f"expected single dimension, got {len(item.shape)} dimensions")
+            raise ValueError(f"expected single dimension but recieved shape {tuple(item.shape)}")
         return self(item).tolist()
 
 
@@ -65,7 +65,7 @@ class QNetLearning:
 
     def _train(self, states, actions, rewards, next_states, dones):
         states = torch.tensor(states, dtype=torch.float)
-        actions = torch.tensor(actions, dtype=torch.float)
+        actions = torch.tensor(actions, dtype=torch.int)
         rewards = torch.tensor(rewards, dtype=torch.float)
         next_states = torch.tensor(next_states, dtype=torch.float)
 
