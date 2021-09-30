@@ -1,10 +1,8 @@
-import numpy as np
 import random
 import torch
 from collections import deque
 from torch import nn, optim
 from torch.nn import functional
-
 
 from snakeai.helper import dict_to_str, write_to_file
 
@@ -20,6 +18,12 @@ class QNet(nn.Module):
         x = functional.relu(self.hidden(x))
         x = self.out(x)
         return x
+
+    def __getitem__(self, item):
+        item = torch.tensor(item, dtype=torch.float)
+        if len(item.shape) != 1:
+            raise ValueError(f"expected single dimension, got {len(item.shape)} dimensions")
+        return self(item).tolist()
 
 
 # TODO: QNetSarsa
@@ -44,16 +48,13 @@ class QNetLearning:
             action = get_action(state)
             done, reward = game.play_step(action, render)
             next_state = get_state(game)
-            # train on time step
             self._train(state, action, reward, next_state, done)
             self.memory.append((state, action, reward, next_state, done))
             state = next_state
-        # train on full memory
         self._train_long_memory(1000)
         self.params['n_games'] += 1
 
     def _train_long_memory(self, batch_size):
-        """Train on random sample from memory."""
         if len(self.memory) > batch_size:
             mini_sample = random.sample(self.memory, batch_size)
         else:

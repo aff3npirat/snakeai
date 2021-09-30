@@ -1,4 +1,3 @@
-import random
 from collections import defaultdict
 
 from snakeai.helper import default_value, dict_to_str, write_to_file
