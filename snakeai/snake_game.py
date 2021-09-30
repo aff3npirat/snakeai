@@ -1,6 +1,8 @@
 import pygame
 import random
 
+pygame.init()
+pygame.display.set_caption("Snake Game")
 
 # movement directions
 UP = 0
@@ -24,22 +26,20 @@ class SnakeGame:
     def __init__(self, x_tiles, y_tiles):
         self.x_tiles = x_tiles
         self.y_tiles = y_tiles
-        self.game_window = pygame.display.set_mode((self.x_tiles * TILE_SIZE, self.y_tiles * TILE_SIZE))
+        self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE, y_tiles * TILE_SIZE))
         self.fps = pygame.time.Clock()
-        pygame.init()
-        pygame.display.set_caption("Snake Game")
         self.direction = RIGHT
+        self.score = 0
+        self.n_steps = 1
         self.head = []
         self.body = []
         self.food = []
-        self.score = 0
-        self.n_steps = 0
         self.reset()
 
     def reset(self):
         self.direction = RIGHT
         self.score = 0
-        self.n_steps = 0
+        self.n_steps = 1
         self.head = [(self.x_tiles // 2) * TILE_SIZE, (self.y_tiles // 2) * TILE_SIZE]
         self.body = [[self.head[0] - i*TILE_SIZE, self.head[1]] for i in range(1, 4)]
         self.food = [random.randrange(0, self.x_tiles) * TILE_SIZE,
@@ -52,9 +52,6 @@ class SnakeGame:
                     pygame.quit()
 
         self.body.insert(0, self.head)
-        if render:
-            self.update_ui()
-            self.fps.tick(SPEED)
         self.n_steps += 1
 
         if action == UP and not self.direction == DOWN:
@@ -76,22 +73,30 @@ class SnakeGame:
             self.head[0] += TILE_SIZE
 
         reward = 0
+        done = False
         if self.head == self.food:
             self.score += 1
-            self.n_steps = 0
+            self.n_steps = 1
             reward += 10
-            self.food = [random.randrange(1, self.x_tiles) * TILE_SIZE, random.randrange(1, self.y_tiles) * TILE_SIZE]
+            self.food = [random.randrange(0, self.x_tiles) * TILE_SIZE,
+                         random.randrange(0, self.y_tiles) * TILE_SIZE]
         else:
             self.body.pop()
 
         if len(self.body)+1 == self.x_tiles * self.y_tiles:
-            reward += 15
-            return [True, reward]
+            # victory
+            reward += 10
+            done = True
         if self.is_collision(self.head) or self.n_steps == self.x_tiles * self.y_tiles:
+            # lose
             reward -= 10
-            return [True, reward]
+            done = True
 
-        return [False, reward]
+        if render:
+            self.update_ui()
+            self.fps.tick(SPEED)
+
+        return [done, reward]
 
     def is_collision(self, point):
         return self.out_of_bounds(point) or self.is_body_position(point)
