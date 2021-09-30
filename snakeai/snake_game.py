@@ -100,10 +100,7 @@ class SnakeGame:
         return [done, reward]
 
     def is_collision(self, point):
-        return self.out_of_bounds(point) or self.is_body_position(point)
-
-    def is_body_position(self, point):
-        return point in self.body
+        return self.out_of_bounds(point) or point in self.body
 
     def out_of_bounds(self, point):
         w = self.x_tiles * TILE_SIZE
