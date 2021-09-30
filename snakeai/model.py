@@ -11,20 +11,20 @@ def markov_property(game):
     dir_r = game.direction == RIGHT
 
     state = (dir_u, dir_d, dir_l, dir_r,
-             game.food_position[1] < game.head_position[1],
-             game.food_position[1] > game.head_position[1],
-             game.food_position[0] < game.head_position[1],
-             game.food_position[0] > game.head_position[0])
+             game.food[1] < game.head[1],
+             game.food[1] > game.head[1],
+             game.food[0] < game.head[1],
+             game.food[0] > game.head[0])
 
     for x in range(game.x_tiles):
         for y in range(game.y_tiles):
-            if game.head_position[0] // TILE_SIZE == x and game.head_position[1] // TILE_SIZE == y:
+            if game.head[0] // TILE_SIZE == x and game.head[1] // TILE_SIZE == y:
                 state += (1,)
             else:
                 val = 0
-                for i in range(len(game.body_position)):
-                    point_x = game.body_position[i][0] // TILE_SIZE
-                    point_y = game.body_position[i][1] // TILE_SIZE
+                for i in range(len(game.body)):
+                    point_x = game.body[i][0] // TILE_SIZE
+                    point_y = game.body[i][1] // TILE_SIZE
                     if point_x == x and point_y == y:
                         val = 2
                         break
@@ -38,10 +38,10 @@ def short_sighted(game):
     dir_l = game.direction == LEFT
     dir_r = game.direction == RIGHT
 
-    pos_u = [game.head_position[0], game.head_position[1] - TILE_SIZE]
-    pos_d = [game.head_position[0], game.head_position[1] + TILE_SIZE]
-    pos_l = [game.head_position[0] - TILE_SIZE, game.head_position[1]]
-    pos_r = [game.head_position[0] + TILE_SIZE, game.head_position[1]]
+    pos_u = [game.head[0], game.head[1] - TILE_SIZE]
+    pos_d = [game.head[0], game.head[1] + TILE_SIZE]
+    pos_l = [game.head[0] - TILE_SIZE, game.head[1]]
+    pos_r = [game.head[0] + TILE_SIZE, game.head[1]]
 
     state = (
         # Danger straight
@@ -69,10 +69,10 @@ def short_sighted(game):
         dir_r,
 
         # Relative food position
-        game.food_position[1] < game.head_position[1],
-        game.food_position[1] > game.head_position[1],
-        game.food_position[0] < game.head_position[1],
-        game.food_position[0] > game.head_position[0],
+        game.food[1] < game.head[1],
+        game.food[1] > game.head[1],
+        game.food[0] < game.head[1],
+        game.food[0] > game.head[0],
     )
     return state
 
