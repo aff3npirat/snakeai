@@ -10,7 +10,10 @@ def markov_property(game):
     dir_l = game.direction == LEFT
     dir_r = game.direction == RIGHT
 
-    state = (dir_u, dir_d, dir_l, dir_r,
+    state = (dir_u,
+             dir_d,
+             dir_l,
+             dir_r,
              game.food[1] < game.head[1],
              game.food[1] > game.head[1],
              game.food[0] < game.head[1],

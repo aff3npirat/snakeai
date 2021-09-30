@@ -35,6 +35,7 @@ class SnakeGame:
         self.body = []
         self.food = []
         self.reset()
+        self.update_ui()
 
     def reset(self):
         self.direction = RIGHT
@@ -45,13 +46,13 @@ class SnakeGame:
         self.food = [random.randrange(0, self.x_tiles) * TILE_SIZE,
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
-    def play_step(self, action, render=False):
+    def play_step(self, action, render=True):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
                     pygame.quit()
 
-        self.body.insert(0, self.head)
+        self.body.insert(0, list(self.head))  # pass head by value, not reference
         self.n_steps += 1
 
         if action == UP and not self.direction == DOWN:
@@ -107,15 +108,33 @@ class SnakeGame:
     def out_of_bounds(self, point):
         w = self.x_tiles * TILE_SIZE
         h = self.y_tiles * TILE_SIZE
-        if point[0] < 0 or point[1] > w - TILE_SIZE:
+        if point[0] < 0 or point[0] > w - TILE_SIZE:
             return True
-        if point[0] < 0 or point[1] > h - TILE_SIZE:
+        if point[1] < 0 or point[1] > h - TILE_SIZE:
             return True
+        return False
 
     def update_ui(self):
         self.game_window.fill(BLACK)
-        pygame.draw.rect(self.game_window, RED, pygame.Rect(*self.head, SNAKE_SIZE, SNAKE_SIZE))
+        # draw food
+        pygame.draw.rect(
+            self.game_window,
+            WHITE,
+            pygame.Rect(self.food[0], self.food[1], TILE_SIZE, TILE_SIZE)
+        )
+        # draw snake
+        offset = (TILE_SIZE-SNAKE_SIZE) / 2
+        left = self.head[0] + offset
+        top = self.head[1] + offset
+        pygame.draw.rect(
+            self.game_window,
+            RED,
+            pygame.Rect(left, top, SNAKE_SIZE, SNAKE_SIZE)
+        )
         for pos in self.body:
-            pygame.draw.rect(self.game_window, GREEN, pygame.Rect(*pos, SNAKE_SIZE, SNAKE_SIZE))
-        pygame.draw.rect(self.game_window, WHITE, pygame.Rect(self.food[0], self.food[1], TILE_SIZE, TILE_SIZE))
+            pygame.draw.rect(
+                self.game_window,
+                GREEN,
+                pygame.Rect(pos[0] + offset, pos[1] + offset, SNAKE_SIZE, SNAKE_SIZE)
+            )
         pygame.display.update()
