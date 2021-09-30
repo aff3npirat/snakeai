@@ -13,12 +13,12 @@ class FirstVisitMC:
         self.Q = defaultdict(default_value)
         self.num_visits = defaultdict(default_value)
 
-    def train_episode(self, game, get_action, get_state, render):
+    def train_episode(self, game, get_action, vision, render):
         game.reset()
         episode = []
         done = False
         while not done:
-            state = get_state(game)
+            state = vision(game)
             action = get_action(state)
             done, reward = game.play_step(action, render)
             episode.append((state, action, reward))

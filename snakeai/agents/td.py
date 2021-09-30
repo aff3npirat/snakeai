@@ -12,14 +12,14 @@ class TDSarsa:
         self.Q = defaultdict(default_value)
         self.name = name
 
-    def train_episode(self, game, get_action, get_state, render):
+    def train_episode(self, game, get_action, vision, render):
         game.reset()
         done = False
-        state = get_state(game)
+        state = vision(game)
         action = get_action(state)
         while not done:
             done, reward = game.play_step(action, render)
-            next_state = get_state(game)
+            next_state = vision(game)
             next_action = get_action(next_state)
             target = reward + self.params['gamma'] * self.Q[next_state][next_action]
             delta = target - self.Q[state][action]

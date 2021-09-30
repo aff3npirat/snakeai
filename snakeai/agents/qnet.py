@@ -38,14 +38,14 @@ class QNetLearning:
         self.optimizer = optim.Adam(self.Q.parameters(), lr=params['lr'])
         self.criterion = nn.MSELoss()
 
-    def train_episode(self, game, get_action, get_state, render):
+    def train_episode(self, game, get_action, vision, render):
         game.reset()
         done = False
-        state = get_state(game)
+        state = vision(game)
         while not done:
             action = get_action(state)
             done, reward = game.play_step(action, render)
-            next_state = get_state(game)
+            next_state = vision(game)
             self._train(state, action, reward, next_state, done)
             self.memory.append((state, action, reward, next_state, done))
             state = next_state

@@ -8,7 +8,7 @@ from snakeai.helper import plot, read_from_file, save_plot
 from snakeai.snake_game import SnakeGame
 
 
-def train(agent=None, agent_file=None, eps_greedy=None, get_state=None, h=20, w=20, episodes=1,
+def train(agent=None, agent_file=None, eps_greedy=None, vision=None, h=20, w=20, episodes=1,
           save=True, verbose=1):
     if agent_file is not None and (root_dir / "agents" / agent_file).is_file():
         agent = read_from_file(root_dir / "agents" / agent_file)
@@ -23,7 +23,7 @@ def train(agent=None, agent_file=None, eps_greedy=None, get_state=None, h=20, w=
         return random.choices([0, 1, 2, 3], weights=action_probs)[0]
 
     for k in range(1, episodes + 1):
-        agent.train_episode(game, get_action, get_state, verbose>=3)
+        agent.train_episode(game, get_action, vision, verbose >= 3)
 
         # plot
         plot_scores.append(game.score)
