@@ -1,9 +1,6 @@
 import pygame
 import random
 
-pygame.init()
-pygame.display.set_caption("Snake Game")
-
 # movement directions
 UP = 0
 DOWN = 1
@@ -35,6 +32,8 @@ class SnakeGame:
         self.food = []
         self.reset()
         if render:
+            pygame.init()
+            pygame.display.set_caption("Snake Game")
             self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE, y_tiles * TILE_SIZE))
             self.update_ui()
         else:
@@ -50,11 +49,6 @@ class SnakeGame:
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
     def play_step(self, action):
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q:
-                    pygame.quit()
-
         self.body.insert(0, list(self.head))  # pass head by value, not reference
         self.n_steps += 1
 
