@@ -13,18 +13,14 @@ def train(agent=None, agent_file=None, eps_greedy=None, vision=None, h=20, w=20,
     if agent_file is not None and (root_dir / "agents" / agent_file).is_file():
         agent = read_from_file(root_dir / "agents" / agent_file)
         print(f"Loaded agent {agent.name}")
-    game = SnakeGame(w, h)
+    game = SnakeGame(w, h, verbose>=3)
 
     plot_scores = []
     plot_mean_scores = []
 
-    def get_action(state):
-        action_probs = eps_greedy(agent.Q[state], agent.params)
-        return random.choices([0, 1, 2, 3], weights=action_probs)[0]
-
     for k in range(1, episodes + 1):
         game.reset()
-        agent.train_episode(game, get_action, vision, verbose>=3)
+        agent.train_episode(game)
 
         # plot
         plot_scores.append(game.score)
