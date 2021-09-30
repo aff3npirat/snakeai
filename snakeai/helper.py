@@ -66,7 +66,3 @@ def read_from_file(fpath, text=False):
                 return data
     except FileNotFoundError:
         return None
-
-
-def default_value():
-    return [0, 0, 0, 0]

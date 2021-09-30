@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pygame
-import random
 from datetime import datetime
 
 from snakeai import root_dir
@@ -8,8 +7,7 @@ from snakeai.helper import plot, read_from_file, save_plot
 from snakeai.snake_game import SnakeGame
 
 
-def train(agent=None, agent_file=None, eps_greedy=None, vision=None, h=20, w=20, episodes=1,
-          save=True, verbose=1):
+def train(agent=None, agent_file=None, h=20, w=20, episodes=1, save=True, verbose=1):
     if agent_file is not None and (root_dir / "agents" / agent_file).is_file():
         agent = read_from_file(root_dir / "agents" / agent_file)
         print(f"Loaded agent {agent.name}")
