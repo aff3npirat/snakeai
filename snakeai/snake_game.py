@@ -23,10 +23,9 @@ SPEED = 30
 
 
 class SnakeGame:
-    def __init__(self, x_tiles, y_tiles):
+    def __init__(self, x_tiles, y_tiles, render):
         self.x_tiles = x_tiles
         self.y_tiles = y_tiles
-        self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE, y_tiles * TILE_SIZE))
         self.fps = pygame.time.Clock()
         self.direction = RIGHT
         self.score = 0
@@ -35,7 +34,11 @@ class SnakeGame:
         self.body = []
         self.food = []
         self.reset()
-        self.update_ui()
+        if render:
+            self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE, y_tiles * TILE_SIZE))
+            self.update_ui()
+        else:
+            self.game_window = None
 
     def reset(self):
         self.direction = RIGHT
@@ -46,7 +49,7 @@ class SnakeGame:
         self.food = [random.randrange(0, self.x_tiles) * TILE_SIZE,
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
-    def play_step(self, action, render=True):
+    def play_step(self, action):
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
@@ -93,7 +96,7 @@ class SnakeGame:
             reward -= 10
             done = True
 
-        if render:
+        if self.game_window is not None:
             self.update_ui()
             self.fps.tick(SPEED)
 

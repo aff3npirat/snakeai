@@ -4,7 +4,7 @@ from collections import deque
 from torch import nn, optim
 from torch.nn import functional
 
-from snakeai.helper import dict_to_str, write_to_file
+from snakeai.base import QAgentBase
 
 
 class QNet(nn.Module):
@@ -22,30 +22,28 @@ class QNet(nn.Module):
     def __getitem__(self, item):
         item = torch.tensor(item, dtype=torch.float)
         if len(item.shape) != 1:
-            raise ValueError(f"expected single dimension but recieved shape {tuple(item.shape)}")
+            raise ValueError(f"expected single dimension, got shape {tuple(item.shape)}")
         return self(item).tolist()
 
 
 # TODO: QNetSarsa
-class QNetLearning:
+class QNetLearning(QAgentBase):
 
-    def __init__(self, params, name):
-        params["n_games"] = 0
-        self.params = params
+    def __init__(self, params, name, vision, eps_greedy):
+        super().__init__(params, name, vision, eps_greedy)
         self.Q = QNet(params['in_size'], params['hidden_size'], 4)
-        self.name = name
         self.memory = deque(maxlen=100_000)
         self.optimizer = optim.Adam(self.Q.parameters(), lr=params['lr'])
         self.criterion = nn.MSELoss()
 
-    def train_episode(self, game, get_action, vision, render):
+    def train_episode(self, game):
         game.reset()
         done = False
-        state = vision(game)
+        state = self.get_state(game)
         while not done:
-            action = get_action(state)
-            done, reward = game.play_step(action, render)
-            next_state = vision(game)
+            action = self.get_action(state)
+            done, reward = game.play_step(action)
+            next_state = self.get_state(game)
             self._train(state, action, reward, next_state, done)
             self.memory.append((state, action, reward, next_state, done))
             state = next_state
@@ -87,10 +85,3 @@ class QNetLearning:
         loss = self.criterion(pred, target)
         loss.backward()
         self.optimizer.step()
-
-    def save(self, save_dir):
-        write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
-        info = (f"{type(self).__name__}\n"
-                f"{dict_to_str(self.params)}")
-        write_to_file(info, save_dir / f"{self.name}.yml", text=True)
-        print(f"Saved {self.name} to '{save_dir}'")
