@@ -19,7 +19,6 @@ class QNet(nn.Module):
     def forward(self, x):
         x = functional.relu(self.hidden(x))
         x = self.out(x)
-        assert len(np.shape(x)) == 1, f"output shape is {np.shape(x)}"
         return x
 
 
@@ -40,7 +39,10 @@ class QNetLearning:
         self.criterion = nn.MSELoss()
 
     def get_action(self, state):
-        action_probs = self.eps_greedy(self.Q[state], self.params)
+        state = torch.tensor(state, dtype=torch.float)
+        state = torch.unsqueeze(state, 0)
+        action_values = self.Q(state)
+        action_probs = self.eps_greedy(action_values.tolist(), self.params)
         return random.choices([0, 1, 2, 3], weights=action_probs)[0]
 
     def get_state(self, game):
@@ -90,7 +92,8 @@ class QNetLearning:
             if dones[i]:
                 target[i][actions[i]] = rewards[i]
             else:
-                target[i][actions[i]] = rewards[i] + self.params['gamma'] * max(self.Q(next_states))
+                target[i][actions[i]] = rewards[i] + self.params['gamma'] * max(self.Q(
+                    next_states))
 
         self.Q.zero_grad()  # clears gradient buffers
         loss = self.criterion(pred, target)
