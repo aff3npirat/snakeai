@@ -21,17 +21,14 @@ def markov_property(game):
 
     for x in range(game.x_tiles):
         for y in range(game.y_tiles):
-            if game.head[0] // TILE_SIZE == x and game.head[1] // TILE_SIZE == y:
-                state += (1,)
+            pos = [x * TILE_SIZE, y * TILE_SIZE]
+            if pos == game.head:
+                tile_val = 1
+            elif pos in game.body:
+                tile_val = 2
             else:
-                val = 0
-                for i in range(len(game.body)):
-                    point_x = game.body[i][0] // TILE_SIZE
-                    point_y = game.body[i][1] // TILE_SIZE
-                    if point_x == x and point_y == y:
-                        val = 2
-                        break
-                state += (val,)
+                tile_val = 0
+            state += tile_val
     return state
 
 
