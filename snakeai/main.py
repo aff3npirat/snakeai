@@ -23,7 +23,7 @@ def train(agent=None, agent_file=None, eps_greedy=None, get_state=None, h=20, w=
         return random.choices([0, 1, 2, 3], weights=action_probs)[0]
 
     for k in range(1, episodes + 1):
-        agent.train_episode(game, verbose>=3)
+        agent.train_episode(game, get_action, get_state, verbose>=3)
 
         # plot
         plot_scores.append(game.score)

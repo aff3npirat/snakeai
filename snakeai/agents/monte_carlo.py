@@ -7,29 +7,20 @@ from snakeai.helper import default_value, dict_to_str, write_to_file
 # TODO: EveryVisitMC
 class FirstVisitMC:
 
-    def __init__(self, params, name, view, eps_greedy):
+    def __init__(self, params, name):
         params["n_games"] = 0
         self.params = params
         self.name = name
         self.Q = defaultdict(default_value)
         self.num_visits = defaultdict(default_value)
-        self.view = view
-        self.eps_greedy = eps_greedy
 
-    def get_action(self, state):
-        action_probs = self.eps_greedy(self.Q[state], self.params)
-        return random.choices([0, 1, 2, 3], weights=action_probs)[0]
-
-    def get_state(self, game):
-        return self.view(game)
-
-    def train_episode(self, game, render):
+    def train_episode(self, game, get_action, get_state, render):
         game.reset()
         episode = []
         done = False
         while not done:
-            state = self.get_state(game)
-            action = self.get_action(state)
+            state = get_state(game)
+            action = get_action(state)
             done, reward = game.play_step(action, render)
             episode.append((state, action, reward))
         self.params['n_games'] += 1
@@ -46,7 +37,6 @@ class FirstVisitMC:
     def save(self, save_dir):
         write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
         info = (f"{type(self).__name__}\n"
-                f"({self.eps_greedy.__name__}/{self.view.__name__})\n"
                 f"{dict_to_str(self.params)}")
         write_to_file(info, save_dir / f"{self.name}.yml", text=True)
         print(f"Saved {self.name} to '{save_dir}'")
