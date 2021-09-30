@@ -13,7 +13,6 @@ class FirstVisitMC(QAgentBase):
         self.num_visits = defaultdict(default_value)
 
     def train_episode(self, game):
-        game.reset()
         episode = []
         done = False
         while not done:
@@ -35,7 +34,6 @@ class FirstVisitMC(QAgentBase):
 class EveryVisitMC(FirstVisitMC):
 
     def train_episode(self, game):
-        game.reset()
         episode = []
         done = False
         while not done:

@@ -36,7 +36,6 @@ class QNetQLearning(QAgentBase):
         self.criterion = nn.MSELoss()
 
     def train_episode(self, game):
-        game.reset()
         done = False
         state = self.get_state(game)
         while not done:

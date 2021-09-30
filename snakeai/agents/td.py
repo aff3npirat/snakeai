@@ -7,7 +7,6 @@ class TDSarsa(QAgentBase):
         super().__init__(params, name, vision, eps_greedy)
 
     def train_episode(self, game):
-        game.reset()
         done = False
         state = self.get_state(game)
         action = self.get_action(state)
@@ -23,14 +22,12 @@ class TDSarsa(QAgentBase):
         self.params['n_games'] += 1
 
 
-# TODO: move game.reset() to train()
 class TDQLearning(QAgentBase):
 
     def __init__(self, params, name, vision, eps_greedy):
         super().__init__(params, name, vision, eps_greedy)
 
     def train_episode(self, game):
-        game.reset()
         done = False
         state = self.get_state(game)
         action = self.get_action(state)
