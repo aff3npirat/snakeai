@@ -116,14 +116,22 @@ class SnakeGame:
 
     def update_ui(self):
         self.game_window.fill(BLACK)
+
+        offset = (TILE_SIZE-SNAKE_SIZE) / 2
+        # draw body
+        for pos in self.body:
+            pygame.draw.rect(
+                self.game_window,
+                GREEN,
+                pygame.Rect(pos[0] + offset, pos[1] + offset, SNAKE_SIZE, SNAKE_SIZE)
+            )
         # draw food
         pygame.draw.rect(
             self.game_window,
             WHITE,
             pygame.Rect(self.food[0], self.food[1], TILE_SIZE, TILE_SIZE)
         )
-        # draw snake
-        offset = (TILE_SIZE-SNAKE_SIZE) / 2
+        # draw head
         left = self.head[0] + offset
         top = self.head[1] + offset
         pygame.draw.rect(
@@ -131,10 +139,4 @@ class SnakeGame:
             RED,
             pygame.Rect(left, top, SNAKE_SIZE, SNAKE_SIZE)
         )
-        for pos in self.body:
-            pygame.draw.rect(
-                self.game_window,
-                GREEN,
-                pygame.Rect(pos[0] + offset, pos[1] + offset, SNAKE_SIZE, SNAKE_SIZE)
-            )
         pygame.display.update()
