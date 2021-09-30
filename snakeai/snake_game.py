@@ -100,20 +100,15 @@ class SnakeGame:
         return self.out_of_bounds(point) or self.is_body_position(point)
 
     def is_body_position(self, point):
-        coord = self._point_to_coord(point)
-        return coord in self.body_position
+        return point in self.body_position
 
     def out_of_bounds(self, point):
         w = self.x_tiles * TILE_SIZE
         h = self.y_tiles * TILE_SIZE
-        x, y = self._point_to_coord(point)
-        if x < 0 or x > w - TILE_SIZE:
+        if point[0] < 0 or point[1] > w - TILE_SIZE:
             return True
-        if y < 0 or y > h - TILE_SIZE:
+        if point[0] < 0 or point[1] > h - TILE_SIZE:
             return True
-
-    def _point_to_coord(self, point):
-        return (point[0] * TILE_SIZE, point[1] * TILE_SIZE)
 
     def update_ui(self):
         self.game_window.fill(BLACK)
