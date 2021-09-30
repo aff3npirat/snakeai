@@ -1,6 +1,6 @@
 """Namespace package"""
 
 
-from .monte_carlo import FirstVisitMC
-from .qnet import QNetLearning
-from .td import TDSarsa
+from .monte_carlo import FirstVisitMC, EveryVisitMC
+from .qnet import QNetQLearning, QNetSarsa
+from .td import TDSarsa, TDQLearning
