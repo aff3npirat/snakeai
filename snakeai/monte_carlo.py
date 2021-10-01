@@ -3,7 +3,7 @@ from collections import defaultdict
 from snakeai.base import QAgentBase
 
 
-class FirstVisitMC(QAgentBase):
+class FirstVisit(QAgentBase):
 
     def __init__(self, params, name, vision, eps_greedy):
         super().__init__(params, name, vision, eps_greedy)
@@ -31,7 +31,7 @@ class FirstVisitMC(QAgentBase):
                                           / self.num_visits[state][action])
 
 
-class EveryVisitMC(FirstVisitMC):
+class EveryVisit(FirstVisit):
 
     def train_episode(self, game):
         episode = []
