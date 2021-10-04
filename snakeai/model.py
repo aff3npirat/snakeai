@@ -79,11 +79,11 @@ def full_vision(game):
         for y in range(game.y_tiles):
             pos = [x * TILE_SIZE, y * TILE_SIZE]
             if pos == game.head:
-                state += 1
+                state += (1,)
             elif pos in game.body:
-                state += 2
+                state += (2,)
             else:
-                state += 0
+                state += (0,)
     return state
 
 
@@ -160,7 +160,7 @@ def lin_eps_decay(action_values, params):
     return action_probs
 
 
-def eps_greedy(action_values, params):
+def constant_eps(action_values, params):
     if not any(action_values):
         return [1, 1, 1, 1]
 

@@ -4,7 +4,6 @@
 
 # My ignored files
 agents/*
-plots/*
 *.pyc
 *.egg-info/
 /.idea
