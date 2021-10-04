@@ -1,5 +1,5 @@
-from torch import nn
-from torch.nn import functional
+import torch.nn as nn
+import torch.nn.functional as functional
 
 
 class NLinearNet(nn.Module):
