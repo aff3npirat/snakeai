@@ -101,7 +101,7 @@ def evaluate_monte_carlo():
 def train(agent):
     game = SnakeGame(12, 12, False)
     scores = []
-    for k in range(1): # 1000
+    for k in range(1000):
         game.reset()
         agent.train_episode(game)
         scores.append(game.score)
@@ -111,7 +111,7 @@ def train(agent):
 def evaluate(agent):
     game = SnakeGame(20, 20, False)
     scores = []
-    for k in range(1): # 50
+    for k in range(50):
         game.reset()
         done = False
         while not done:
