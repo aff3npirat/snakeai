@@ -58,7 +58,7 @@ def evaluate_monte_carlo():
     data_fv = defaultdict(lambda: {})
     # initial call to print 0% progress
     i = 0
-    print_progress_bar(i, 1320, prefix="Progress: ", suffix=" complete")
+    print_progress_bar(i, 440, prefix="Progress:", suffix="complete")
     for eps in epss:
         for gamma in gammas:
             for vision in visions:
@@ -72,8 +72,6 @@ def evaluate_monte_carlo():
                 train(fv_agent)
                 data_ev[key1][key2] = evaluate(ev_agent)
                 data_fv[key1][key2] = evaluate(fv_agent)
-                i += 1
-                print_progress_bar(i, 1320, prefix="Progress: ", suffix=" complete")
 
                 # constant eps
                 key1 = f"{visions[vision]}+const"
@@ -83,8 +81,6 @@ def evaluate_monte_carlo():
                 train(fv_agent)
                 data_ev[key1][key2] = evaluate(ev_agent)
                 data_fv[key1][key2] = evaluate(fv_agent)
-                i += 1
-                print_progress_bar(i, 1320, prefix="Progress: ", suffix=" complete")
 
                 # linear eps decay
                 key1 = f"{visions[vision]}+lin"
@@ -98,14 +94,14 @@ def evaluate_monte_carlo():
                     data_ev[key1][key2] = evaluate(ev_agent)
                     data_fv[key1][key2] = evaluate(fv_agent)
                 i += 1
-                print_progress_bar(i, 1320, prefix="Progress: ", suffix=" complete")
+                print_progress_bar(i, 440, prefix="Progress:", suffix="complete")
     return {"ev": data_ev, "fv": data_fv}
 
 
 def train(agent):
     game = SnakeGame(12, 12, False)
     scores = []
-    for k in range(1_000):
+    for k in range(1): # 1000
         game.reset()
         agent.train_episode(game)
         scores.append(game.score)
@@ -115,7 +111,7 @@ def train(agent):
 def evaluate(agent):
     game = SnakeGame(20, 20, False)
     scores = []
-    for k in range(50):
+    for k in range(1): # 50
         game.reset()
         done = False
         while not done:
