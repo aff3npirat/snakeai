@@ -1,7 +1,7 @@
 import random
 from collections import defaultdict
 
-from snakeai.helper import dict_to_str, write_to_file
+from snakeai.helpers import dict_to_str, write_to_file
 
 
 class QAgentBase:
