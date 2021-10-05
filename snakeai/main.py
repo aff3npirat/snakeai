@@ -33,8 +33,9 @@ def train_agent(agent=None, agent_file=None, h=20, w=20, episodes=1, save=True, 
         if verbose >= 2:
             plot(plot_scores, plot_mean_scores)
     # save
-    plot(plot_scores, plot_mean_scores)
-    save_plot(root_dir / f"agents/{agent.name}/{agent.name}.png")
+    if verbose >= 1:
+        plot(plot_scores, plot_mean_scores)
+        save_plot(root_dir / f"agents/{agent.name}/{agent.name}.png")
     if save:
         save_dir = root_dir / f"agents/{agent.name}"
         agent.save(save_dir)
