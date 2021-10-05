@@ -52,7 +52,7 @@ def evaluate_monte_carlo():
                diagonal_vision: "diagonal",
                short_vision: "short"}
 
-    # "vision+eps_greedy" -> "[eps, gamma, m] -> [mean_score, max_score]"
+    # "vision+eps_greedy" -> "[eps, gamma, m] -> scores"
     data_ev = defaultdict(lambda: {})
     data_fv = defaultdict(lambda: {})
     for eps in epss:
