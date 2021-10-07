@@ -20,7 +20,6 @@ def train_agent(agent=None, agent_file=None, h=20, w=20, episodes=1, save=True, 
 
     plot_scores = []
     plot_mean_scores = []
-
     for k in range(1, episodes + 1):
         game.reset()
         agent.train_episode(game)

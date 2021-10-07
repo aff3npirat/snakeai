@@ -6,7 +6,8 @@ class LinearNet(nn.Module):
 
     def __init__(self, architecture, use_sigmoid=False):
         super().__init__()
-        self.layers = [nn.Linear(architecture[i - 1], architecture[i]) for i in range(1, len(architecture))]
+        self.layers = [nn.Linear(architecture[i - 1], architecture[i])
+                       for i in range(1, len(architecture))]
         self.use_sigmoid = use_sigmoid
 
     def forward(self, x):
