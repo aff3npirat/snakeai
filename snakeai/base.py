@@ -10,8 +10,8 @@ class QAgentBase:
         def default_value():
             return [0, 0, 0, 0]
         self.Q = defaultdict(default_value)
-        params['n_games'] = 0
-        self.params = params
+        self.params = params.copy()
+        self.params['n_games'] = 0
         self.name = name
         self.vision = vision
         self.eps_greedy = eps_greedy
