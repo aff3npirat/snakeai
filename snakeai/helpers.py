@@ -68,7 +68,14 @@ def read_from_file(fpath, text=False):
         return None
 
 
-def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='#'):
+def print_progress_bar(iteration,
+                       total,
+                       prefix='',
+                       suffix='',
+                       decimals=1,
+                       length=100,
+                       fill='#'
+                       ):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -80,7 +87,9 @@ def print_progress_bar(iteration, total, prefix='', suffix='', decimals=1, lengt
         length      - Optional  : character length of bar (Int)
         fill        - Optional  : bar fill character (Str)
     """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    percent = ("{0:." + str(decimals) + "f}").format(
+        100 * (iteration / float(total))
+        )
     filled_length = int(length * iteration // total)
     bar = fill * filled_length + '-' * (length - filled_length)
     print(f'{prefix} |{bar}| {percent}% {suffix}', end="\r")

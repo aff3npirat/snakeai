@@ -57,7 +57,7 @@ def evaluate_monte_carlo():
     data_fv = defaultdict(lambda: {})
     # initial call to print 0% progress
     i = 0
-    print_progress_bar(i, 440, prefix="Progress:", suffix="complete")
+    print_progress_bar(i, 440, prefix="Progress:", suffix="complete", length=80)
     for eps in epss:
         for gamma in gammas:
             for vision in visions:
@@ -93,7 +93,11 @@ def evaluate_monte_carlo():
                     data_ev[key1][key2] = evaluate(ev_agent)
                     data_fv[key1][key2] = evaluate(fv_agent)
                 i += 1
-                print_progress_bar(i, 440, prefix="Progress:", suffix="complete")
+                print_progress_bar(i,
+                                   440,
+                                   prefix="Progress:",
+                                   suffix="complete",
+                                   length=80)
     return {"ev": dict(data_ev), "fv": dict(data_fv)}
 
 
