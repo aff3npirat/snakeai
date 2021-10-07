@@ -95,7 +95,7 @@ def evaluate_monte_carlo():
                     data_fv[key1][key2] = evaluate(fv_agent)
                 i += 1
                 print_progress_bar(i, 440, prefix="Progress:", suffix="complete")
-    return {"ev": data_ev, "fv": data_fv}
+    return {"ev": dict(data_ev), "fv": dict(data_fv)}
 
 
 def train(agent):
