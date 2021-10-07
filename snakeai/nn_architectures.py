@@ -2,12 +2,11 @@ import torch.nn as nn
 import torch.nn.functional as functional
 
 
-class NLinearNet(nn.Module):
+class LinearNet(nn.Module):
 
-    def __init__(self, units, use_sigmoid=False):
+    def __init__(self, architecture, use_sigmoid=False):
         super().__init__()
-        self.layers = [nn.Linear(units[i - 1], units[i]) for i in range(1, len(units))]
-        self.architecture = str(units)
+        self.layers = [nn.Linear(architecture[i - 1], architecture[i]) for i in range(1, len(architecture))]
         self.use_sigmoid = use_sigmoid
 
     def forward(self, x):
