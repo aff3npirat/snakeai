@@ -152,6 +152,7 @@ def evaluate_td():
                     # linear
                     model_id = f"{visions[vision]}+lin"
                     for m in ms:
+                        p["m"] = m
                         param_id = str([eps, gamma, lr, m])
                         sarsa_agent = TDSarsa(p, "", vision, lin_eps_decay)
                         qlearn_agent = TDQLearning(p, "", vision, lin_eps_decay)
