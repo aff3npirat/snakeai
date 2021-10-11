@@ -24,7 +24,7 @@ def train_agent(agent=None,
     if agent_file is not None and (root_dir / "agents" / agent_file).is_file():
         agent = read_from_file(root_dir / "agents" / agent_file)
         print(f"Loaded agent {agent.name}")
-    game = SnakeGame(w, h, verbose >= 3)
+    game = SnakeGame(w, h, verbose>=3)
 
     plot_scores = []
     plot_mean_scores = []
