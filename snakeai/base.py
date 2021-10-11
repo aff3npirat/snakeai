@@ -4,11 +4,13 @@ from collections import defaultdict
 from snakeai.helpers import dict_to_str, write_to_file
 
 
+def default_value():
+    return [0, 0, 0, 0]
+
+
 class QAgentBase:
 
     def __init__(self, params, name, vision, eps_greedy):
-        def default_value():
-            return [0, 0, 0, 0]
         self.Q = defaultdict(default_value)
         self.params = params.copy()
         self.params['n_games'] = 0
