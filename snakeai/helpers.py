@@ -143,7 +143,17 @@ def create_small_table(data):
             mean, params = get_max_mean(data[vision][decay])
             row_text.append(f"max: {mean}\n{params}")
         cell_text.append(row_text)
-    return cell_text
+    plt.ioff()
+    fig, ax = plt.subplots()
+    ax.axis("off")
+    table = ax.table(cellText=cell_text,
+                     rowLabels=row_labels,
+                     colLabels=col_labels,
+                     loc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(5)
+    table.scale(1, 2)
+    plt.show()
 
 
 def convert_data(data):
