@@ -34,7 +34,8 @@ class SnakeGame:
         if render:
             pygame.init()
             pygame.display.set_caption("Snake Game")
-            self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE, y_tiles * TILE_SIZE))
+            self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE,
+                                                        y_tiles * TILE_SIZE))
             self.update_ui()
         else:
             self.game_window = None
@@ -43,13 +44,17 @@ class SnakeGame:
         self.direction = RIGHT
         self.score = 0
         self.n_steps = 1
-        self.head = [(self.x_tiles // 2) * TILE_SIZE, (self.y_tiles // 2) * TILE_SIZE]
-        self.body = [[self.head[0] - i*TILE_SIZE, self.head[1]] for i in range(1, 4)]
+        self.head = [(self.x_tiles // 2) * TILE_SIZE,
+                     (self.y_tiles // 2) * TILE_SIZE]
+        self.body = [[self.head[0] - i * TILE_SIZE, self.head[1]] for i in
+                     range(1, 4)]
         self.food = [random.randrange(0, self.x_tiles) * TILE_SIZE,
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
     def play_step(self, action):
-        self.body.insert(0, list(self.head))  # pass head by value, not reference
+        pygame.event.pump()  # call so pygame can interact with OS
+
+        self.body.insert(0, list(self.head))  # pass by value not reference
         self.n_steps += 1
 
         if action == UP and not self.direction == DOWN:
@@ -81,11 +86,12 @@ class SnakeGame:
         else:
             self.body.pop()
 
-        if len(self.body)+1 == self.x_tiles * self.y_tiles:
+        if len(self.body) + 1 == self.x_tiles * self.y_tiles:
             # victory
             reward += 10
             done = True
-        if self.is_collision(self.head) or self.n_steps == self.x_tiles * self.y_tiles:
+        if self.is_collision(self.head)\
+                or self.n_steps == self.x_tiles * self.y_tiles:
             # lose
             reward -= 10
             done = True
@@ -111,20 +117,23 @@ class SnakeGame:
     def update_ui(self):
         self.game_window.fill(BLACK)
 
-        offset = (TILE_SIZE-SNAKE_SIZE) / 2
+        offset = (TILE_SIZE - SNAKE_SIZE) / 2
         # draw body
         for pos in self.body:
             pygame.draw.rect(
                 self.game_window,
                 GREEN,
-                pygame.Rect(pos[0] + offset, pos[1] + offset, SNAKE_SIZE, SNAKE_SIZE)
-            )
+                pygame.Rect(pos[0] + offset,
+                            pos[1] + offset,
+                            SNAKE_SIZE,
+                            SNAKE_SIZE)
+                )
         # draw food
         pygame.draw.rect(
             self.game_window,
             WHITE,
             pygame.Rect(self.food[0], self.food[1], TILE_SIZE, TILE_SIZE)
-        )
+            )
         # draw head
         left = self.head[0] + offset
         top = self.head[1] + offset
@@ -132,5 +141,5 @@ class SnakeGame:
             self.game_window,
             RED,
             pygame.Rect(left, top, SNAKE_SIZE, SNAKE_SIZE)
-        )
+            )
         pygame.display.update()
