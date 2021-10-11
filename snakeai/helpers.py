@@ -95,3 +95,70 @@ def print_progress_bar(iteration,
     print(f'{prefix} |{bar}| {percent}% {suffix}', end="\r")
     if iteration == total:
         print()
+
+
+def get_max_mean(data):
+    """
+    Parameters
+    ----------
+    data : dict
+        Maps different parameters to scores.
+        E.g. '[0.1, 0.2]' -> [0, 1, 0, 10] would be the data from 4 runs.
+    """
+    mean_scores = list(map(sum, data.values()))
+    mean_scores = list(map(lambda x: x / 50, mean_scores))
+    max_mean = max(mean_scores)
+    keys = []
+    for idx, val in enumerate(list(mean_scores)):
+        if val == max_mean:
+            params = list(data.keys())[idx][1:-1].split(", ")
+            if len(params) == 2:
+                eps, gamma = params
+                keys.append(f"[{eps:.3}, {gamma:.3}]")
+            elif len(params) == 3:
+                eps, gamma, m = params
+                keys.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
+    return max_mean, keys
+
+
+def create_small_table(data):
+    """
+    Parameters
+    ----------
+    data : dict
+        Maps vision strings to nested dicts. Each vision string
+        is mapped to a dictionary mapping decay strings to a dictionary which
+        maps parameter settings to lists of scores.
+        E.g. 'full' -> {
+                        "simple": {'[0.0, 1.0]': [0, 10, 12, 5]},
+                        "const": {'[0.0, 1.0]': [20, 25, 0, 30]}
+                        }
+    """
+    col_labels = ["const", "simple", "lin"]
+    row_labels = ["full", "partial", "diagonal", "short"]
+    cell_text = []  # list of lists
+    for vision in row_labels:
+        row_text = []
+        for decay in col_labels:
+            mean, params = get_max_mean(data[vision][decay])
+            row_text.append(f"max: {mean}\n{params}")
+        cell_text.append(row_text)
+    return cell_text
+
+
+def convert_data(data):
+    """
+    Parameters
+    ----------
+    data : dict
+        Maps vision+decay strings to dictionaries mapping parameter settings to
+        scores. E.g. "full+simple" -> {'[0.0, 1.0]': [0, 10, 20, 30]}
+    """
+    converted = {}
+    for key in data:
+        vision, decay = key.split("+")
+        if vision in converted:
+            converted[vision][decay] = data[key]
+        else:
+            converted[vision] = {decay: data[key]}
+    return converted
