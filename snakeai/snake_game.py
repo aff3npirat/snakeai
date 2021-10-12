@@ -31,8 +31,8 @@ class SnakeGame:
         self.body = []
         self.food = []
         self.reset()
+        pygame.init()
         if render:
-            pygame.init()
             pygame.display.set_caption("Snake Game")
             self.game_window = pygame.display.set_mode((x_tiles * TILE_SIZE,
                                                         y_tiles * TILE_SIZE))
@@ -52,6 +52,8 @@ class SnakeGame:
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
     def play_step(self, action):
+        pygame.event.pump()  # call to prevent pygame/plot from freezing
+
         self.body.insert(0, list(self.head))  # pass by value not reference
         self.n_steps += 1
 
@@ -95,7 +97,6 @@ class SnakeGame:
             done = True
 
         if self.game_window is not None:
-            pygame.event.pump()  # call to prevent pygame from freezing
             self.update_ui()
             self.fps.tick(SPEED)
 
