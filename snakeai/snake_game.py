@@ -52,8 +52,6 @@ class SnakeGame:
                      random.randrange(0, self.y_tiles) * TILE_SIZE]
 
     def play_step(self, action):
-        pygame.event.pump()  # call so pygame can interact with OS
-
         self.body.insert(0, list(self.head))  # pass by value not reference
         self.n_steps += 1
 
@@ -97,6 +95,7 @@ class SnakeGame:
             done = True
 
         if self.game_window is not None:
+            pygame.event.pump()  # call to prevent pygame from freezing
             self.update_ui()
             self.fps.tick(SPEED)
 
