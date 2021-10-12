@@ -1,15 +1,12 @@
 from collections import defaultdict
 
-from snakeai.base import QAgentBase
+from snakeai.base import QAgentBase, default_value
 
 
 class FirstVisit(QAgentBase):
 
     def __init__(self, params, name, vision, eps_greedy):
         super().__init__(params, name, vision, eps_greedy)
-
-        def default_value():
-            return [0, 0, 0, 0]
         self.num_visits = defaultdict(default_value)
 
     def train_episode(self, game):

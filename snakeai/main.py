@@ -46,7 +46,7 @@ def train_agent(agent=None,
     if save:
         save_dir = root_dir / f"agents/{agent.name}"
         agent.save(save_dir)
-        print(f"Saved {agent.name} to '{save_dir}'")
+        print(f"Saved agent to '{save_dir}'")
     pygame.quit()
     plt.close()
 
