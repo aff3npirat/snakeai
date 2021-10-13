@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import pandas as pd
 import pickle
 from pathlib import Path
 
@@ -96,3 +95,11 @@ def print_progress_bar(iteration,
     print(f'{prefix} |{bar}| {percent}% {suffix}', end="\r")
     if iteration == total:
         print()
+
+
+def get_top_directory():
+    tmp_path = Path(__file__).absolute().parent.parent
+    if (tmp_path / "snakeai/init.py").exists():
+        return tmp_path
+    else:
+        raise ValueError(f"couldn't find project root, found {tmp_path}")
