@@ -1,6 +1,7 @@
+import matplotlib.pyplot as plt
+import pandas as pd
 import pickle
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 
 def plot(scores, mean_scores):
@@ -116,7 +117,7 @@ def get_max_mean(data):
             if len(params) == 2:
                 eps, gamma = params
                 params.append(f"[{eps:.3}, {gamma:.3}]")
-            elif len(params) == 3:
+            else:
                 eps, gamma, m = params
                 params.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
     return max_mean, params
@@ -157,32 +158,37 @@ def small_table(data):
     return table
 
 
-def eval_table(decay_id, data):
+def tables(data):
+    """
+    Parameters
+    ----------
+    data : dict
+        Dictionary containing evaluation data for single agent.
+
+    Returns
+    -------
+    A dictionary containing a Dataframe for each eps-decay.
+    """
     # data[vision][decay][params]
+    dfs = {}
     col_labels = ["full", "partial", "diagonal", "short"]
-    row_labels = [param for param in data["full"][decay_id]]
-    cell_text = [[f"{sum(scores) / len(scores):.2f}"
-                  for vision in col_labels
-                  if (scores := data[vision][decay_id][param]) is not None]
-                 for param in row_labels]
+    for decay_id in ["simple", "const", "lin"]:
+        row_labels = []
+        for param_id in data["full"][decay_id]:
+            params = param_id[1:-1].split(", ")
+            if len(params) == 2:
+                eps, gamma = params
+                row_labels.append(f"[{eps:.3}, {gamma:.3}]")
+            else:
+                eps, gamma, m = params
+                row_labels.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
 
-    nrows = len(row_labels) + 1
-    ncols = len(col_labels) + 1
-    hcell, wcell = 0.1, 0.1
-    hpad, wpad = 0.5, 0.5
-
-    plt.ioff()
-    fig, ax = plt.subplots(figsize=(ncols * wcell + wpad, nrows * hcell + hpad))
-    ax.axis("off")
-    table = ax.table(cellText=cell_text,
-                     rowLabels=row_labels,
-                     colLabels=col_labels,
-                     loc="center")
-    table.auto_set_font_size(False)
-    table.set_fontsize(5)
-    table.scale(1, 2)
-    plt.tight_layout()
-    return table
+        rows = [[f"{sum(scores) / len(scores):.2f}"
+                 for vision in col_labels
+                 if (scores := data[vision][decay_id][param]) is not None]
+                for param in data["full"][decay_id]]
+        dfs[decay_id] = pd.DataFrame(rows, index=row_labels, columns=col_labels)
+    return dfs
 
 
 def convert_data(data):
