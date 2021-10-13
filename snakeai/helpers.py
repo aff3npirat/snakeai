@@ -98,64 +98,12 @@ def print_progress_bar(iteration,
         print()
 
 
-def get_max_mean(data):
-    """
-    Parameters
-    ----------
-    data : dict
-        Maps parameter settings to scores.
-        E.g. '[0.1, 0.2]' -> [0, 1, 0, 10] would be the data from 4 runs.
-    """
-    n = len(list(data.values())[0])
-    mean_scores = list(map(sum, data.values()))
-    mean_scores = list(map(lambda x: x / n, mean_scores))
-    max_mean = max(mean_scores)
-    params = []
-    for idx, val in enumerate(list(mean_scores)):
-        if val == max_mean:
-            params = list(data.keys())[idx][1:-1].split(", ")
-            if len(params) == 2:
-                eps, gamma = params
-                params.append(f"[{eps:.3}, {gamma:.3}]")
-            else:
-                eps, gamma, m = params
-                params.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
-    return max_mean, params
-
-
 def small_table(data):
-    """
-    Parameters
-    ----------
-    data : dict
-        Maps vision strings to nested dicts. Each vision string
-        is mapped to a dictionary mapping decay strings to a dictionary which
-        maps parameter settings to lists of scores.
-        E.g. 'full' -> {
-                        "simple": {'[0.0, 1.0]': [0, 10, 12, 5]},
-                        "const": {'[0.0, 1.0]': [20, 25, 0, 30]}
-                        }
-    """
-    col_labels = ["const", "simple", "lin"]
-    row_labels = ["full", "partial", "diagonal", "short"]
-    cell_text = []  # list of lists
-    for vision in row_labels:
-        row_text = []
-        for decay in col_labels:
-            mean, params = get_max_mean(data[vision][decay])
-            row_text.append(f"max: {mean}\n{params}")
-        cell_text.append(row_text)
-    plt.ioff()
-    fig, ax = plt.subplots()
-    ax.axis("off")
-    table = ax.table(cellText=cell_text,
-                     rowLabels=row_labels,
-                     colLabels=col_labels,
-                     loc="center")
-    table.auto_set_font_size(False)
-    table.set_fontsize(5)
-    table.scale(1, 2)
-    return table
+    dfs = tables(data)
+    max_df = []
+    for decay_id in ["simple", "lin", "const"]:
+        max_df.append(dfs[decay_id].max(0))
+    return pd.DataFrame(max_df, index=["simple", "lin", "const"])
 
 
 def tables(data):
@@ -187,7 +135,10 @@ def tables(data):
                  for vision in col_labels
                  if (scores := data[vision][decay_id][param]) is not None]
                 for param in data["full"][decay_id]]
-        dfs[decay_id] = pd.DataFrame(rows, index=row_labels, columns=col_labels)
+        dfs[decay_id] = pd.DataFrame(rows,
+                                     index=row_labels,
+                                     columns=col_labels,
+                                     dtype=float)
     return dfs
 
 
