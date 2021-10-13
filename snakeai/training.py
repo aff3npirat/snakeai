@@ -45,10 +45,10 @@ def train_agent(agent=None,
         if verbose >= 1 and (k % 1000 == 0 or k == 1):
             print(f"{datetime.now().strftime('%H.%M')}: episode {k}/{episodes}")
         if verbose >= 2:
-            helpers.plot(plot_scores, plot_mean_scores)
+            helpers.plot_scores(plot_scores, plot_mean_scores)
     # save
     if verbose >= 1:
-        helpers.plot(plot_scores, plot_mean_scores)
+        helpers.plot_scores(plot_scores, plot_mean_scores)
         helpers.save_plot(f"agents/{agent.name}/{agent.name}.png")
     if save:
         save_dir = f"agents/{agent.name}"

@@ -3,7 +3,7 @@ import pickle
 from pathlib import Path
 
 
-def plot(scores, mean_scores):
+def plot_scores(scores, mean_scores):
     plt.ion()
     plt.clf()
     plt.xlabel('n_games')
