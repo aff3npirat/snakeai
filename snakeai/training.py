@@ -41,6 +41,7 @@ def train_agent(agent=None,
 
         if save and game.score > agent.params['record']:
             print(f"New record {game.score}")
+            agent.params["record"] = game.score
             save_dir = f"agents/{agent.name}"
             agent.save(save_dir)
 
