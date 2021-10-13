@@ -1,7 +1,7 @@
 import random
 from collections import defaultdict
 
-from snakeai.helpers import dict_to_str, write_to_file
+from . import helpers
 
 
 def default_value():
@@ -29,9 +29,8 @@ class QAgentBase:
         return random.choices([0, 1, 2, 3], weights=action_probs)[0]
 
     def save(self, save_dir):
-        write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
+        helpers.write_to_file(self, save_dir / f"{self.name}.pkl", text=False)
         to_yml = (f"{type(self).__name__} "
                   f"({self.vision.__name__}/{self.eps_greedy.__name__})\n"
-                  f"{dict_to_str(self.params)}")
-        write_to_file(to_yml, save_dir / f"{self.name}.yml", text=True)
-
+                  f"{helpers.dict_to_str(self.params)}")
+        helpers.write_to_file(to_yml, save_dir / f"{self.name}.yml", text=True)

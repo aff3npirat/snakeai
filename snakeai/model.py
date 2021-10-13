@@ -1,6 +1,6 @@
 import numpy as np
 
-from snakeai.snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
+from .snake_game import TILE_SIZE, UP, DOWN, LEFT, RIGHT
 
 
 # game to state functions
