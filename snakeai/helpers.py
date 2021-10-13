@@ -101,7 +101,7 @@ def print_progress_bar(iteration,
 
 def get_top_directory():
     tmp_path = Path(__file__).absolute().parent.parent
-    if (tmp_path / "snakeai/init.py").exists():
+    if (tmp_path / "snakeai/__init__.py").exists():
         return tmp_path
     else:
         raise ValueError(f"couldn't find project root, found {tmp_path}")
