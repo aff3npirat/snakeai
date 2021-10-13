@@ -15,6 +15,7 @@ def plot(scores, mean_scores):
 
 
 def save_plot(fpath):
+    fpath = get_top_directory() / fpath
     fpath.parent.mkdir(parents=True, exist_ok=True)
     i = 1 if Path.is_file(fpath) else -1
     try:
