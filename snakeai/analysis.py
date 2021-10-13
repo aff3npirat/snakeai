@@ -1,5 +1,7 @@
 import pandas as pd
 
+from . import helpers
+
 
 def small_table(data):
     dfs = tables(data)
@@ -61,3 +63,22 @@ def convert_data(data):
         else:
             converted[vision] = {decay: data[key]}
     return converted
+
+
+def html_tables(data, root_dir):
+    """Save data as html tables.
+    
+    Creates three files (simple.html, const.html, lin.html) in specified root
+    directory.
+    
+    Parameters
+    ----------
+    data : dict
+        Evaluation data for single agent.
+    root_dir : str
+        Relative path to directory where tables should be saved to.
+    """
+    dfs = tables(data)
+    for key in dfs:
+        html_table = dfs[key].to_html()
+        helpers.write_to_file(html_table, f"{root_dir}/{key}.html", text=True)
