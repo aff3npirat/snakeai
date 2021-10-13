@@ -45,6 +45,7 @@ def dict_to_str(dict_, sep="\n"):
 
 
 def write_to_file(data, fpath, text=False):
+    fpath = get_top_directory() / fpath
     Path.mkdir(fpath.parent, parents=True, exist_ok=True)
     if text:
         with open(fpath, "wt") as file:
@@ -55,6 +56,7 @@ def write_to_file(data, fpath, text=False):
 
 
 def read_from_file(fpath, text=False):
+    fpath = get_top_directory() / fpath
     try:
         if text:
             with open(fpath, "rt") as file:

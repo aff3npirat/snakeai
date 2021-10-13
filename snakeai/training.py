@@ -20,7 +20,7 @@ def train_agent(agent=None,
                 ):
     top_level = helpers.get_top_directory()
     if agent_file is not None and (top_level / "agents" / agent_file).is_file():
-        agent = helpers.read_from_file(top_level / "agents" / agent_file)
+        agent = helpers.read_from_file(f"agents/{agent_file}")
         print(f"Loaded agent {agent.name}")
     game = SnakeGame(w, h, verbose >= 3)
 
@@ -40,9 +40,9 @@ def train_agent(agent=None,
     # save
     if verbose >= 1:
         helpers.plot(plot_scores, plot_mean_scores)
-        helpers.save_plot(top_level / f"agents/{agent.name}/{agent.name}.png")
+        helpers.save_plot(f"agents/{agent.name}/{agent.name}.png")
     if save:
-        save_dir = top_level / f"agents/{agent.name}"
+        save_dir = f"agents/{agent.name}"
         agent.save(save_dir)
         print(f"Saved agent to '{save_dir}'")
     pygame.quit()
