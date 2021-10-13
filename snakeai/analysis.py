@@ -101,6 +101,13 @@ def convert_data(data):
     return converted
 
 
+def load_data(fpath):
+    data = helpers.read_from_file(fpath)
+    for agent_id in data:
+        data[agent_id] = convert_data(data[agent_id])
+    return data
+
+
 def html_tables(data, root_dir):
     """Save data as html tables.
     
@@ -117,8 +124,8 @@ def html_tables(data, root_dir):
     """
     mean_dfs = mean_tables(data)
     max_dfs = max_tables(data)
-    mean_dfs["max"] = small_table(data, peak=False)
-    max_dfs["max"] = small_table(data, peak=True)
+    mean_dfs["overview"] = small_table(data, peak=False)
+    max_dfs["overview"] = small_table(data, peak=True)
     for key in mean_dfs:
         df = pd.concat([mean_dfs[key], max_dfs[key]],
                        axis=1,
