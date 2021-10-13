@@ -14,6 +14,7 @@ class QAgentBase:
         self.Q = defaultdict(default_value)
         self.params = params.copy()
         self.params['n_games'] = 0
+        self.params['record'] = 0
         self.name = name
         self.vision = vision
         self.eps_greedy = eps_greedy

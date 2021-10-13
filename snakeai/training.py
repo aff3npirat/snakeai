@@ -39,6 +39,11 @@ def train_agent(agent=None,
         game.reset()
         agent.train_episode(game)
 
+        if save and game.score > agent.params['record']:
+            save_dir = f"agents/{agent.name}"
+            agent.save(save_dir)
+            print(f"Saved agent to '{save_dir}'")
+
         # plot
         plot_scores.append(game.score)
         plot_mean_scores.append(sum(plot_scores) / len(plot_scores))
