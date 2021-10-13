@@ -4,6 +4,12 @@ from . import helpers
 
 
 def small_table(data):
+    """
+    Parameters
+    ----------
+    data : dict
+        Containing evaluation data for single agent.
+    """
     dfs = tables(data)
     max_df = []
     for decay_id in ["simple", "lin", "const"]:
@@ -16,7 +22,7 @@ def tables(data):
     Parameters
     ----------
     data : dict
-        Dictionary containing evaluation data for single agent.
+        Containing evaluation data for single agent.
 
     Returns
     -------
@@ -52,8 +58,7 @@ def convert_data(data):
     Parameters
     ----------
     data : dict
-        Maps vision+decay strings to dictionaries mapping parameter settings to
-        scores. E.g. "full+simple" -> {'[0.0, 1.0]': [0, 10, 20, 30]}
+        Containing evaluation data for single agent.
     """
     converted = {}
     for key in data:
@@ -68,8 +73,8 @@ def convert_data(data):
 def html_tables(data, root_dir):
     """Save data as html tables.
     
-    Creates three files (simple.html, const.html, lin.html) in specified root
-    directory.
+    Creates four files (simple.html, const.html, lin.html, max.html) in
+    specified root directory.
     
     Parameters
     ----------
@@ -79,6 +84,7 @@ def html_tables(data, root_dir):
         Relative path to directory where tables should be saved to.
     """
     dfs = tables(data)
+    dfs["max"] = small_table(data)
     for key in dfs:
         html_table = dfs[key].to_html()
         helpers.write_to_file(html_table, f"{root_dir}/{key}.html", text=True)
