@@ -11,16 +11,25 @@ from .snake_game import SnakeGame
 
 
 def train_agent(agent=None,
-                agent_file=None,
                 h=20,
                 w=20,
                 episodes=1,
                 save=True,
                 verbose=1
                 ):
+    """
+    Parameters
+    ----------
+    agent : QAgentBase or str
+    h : int
+    w : int
+    episodes : int
+    save : bool
+    verbose : int
+    """
     top_level = helpers.get_top_directory()
-    if agent_file is not None and (top_level / "agents" / agent_file).is_file():
-        agent = helpers.read_from_file(f"agents/{agent_file}")
+    if isinstance(agent, str) and (top_level / agent).is_file():
+        agent = helpers.read_from_file(agent)
         print(f"Loaded agent {agent.name}")
     game = SnakeGame(w, h, verbose >= 3)
 
