@@ -102,26 +102,27 @@ def get_max_mean(data):
     Parameters
     ----------
     data : dict
-        Maps different parameters to scores.
+        Maps parameter settings to scores.
         E.g. '[0.1, 0.2]' -> [0, 1, 0, 10] would be the data from 4 runs.
     """
+    n = len(list(data.values())[0])
     mean_scores = list(map(sum, data.values()))
-    mean_scores = list(map(lambda x: x / 50, mean_scores))
+    mean_scores = list(map(lambda x: x / n, mean_scores))
     max_mean = max(mean_scores)
-    keys = []
+    params = []
     for idx, val in enumerate(list(mean_scores)):
         if val == max_mean:
             params = list(data.keys())[idx][1:-1].split(", ")
             if len(params) == 2:
                 eps, gamma = params
-                keys.append(f"[{eps:.3}, {gamma:.3}]")
+                params.append(f"[{eps:.3}, {gamma:.3}]")
             elif len(params) == 3:
                 eps, gamma, m = params
-                keys.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
-    return max_mean, keys
+                params.append(f"[{eps:.3}, {gamma:.3}, {m:.3}]")
+    return max_mean, params
 
 
-def create_small_table(data):
+def small_table(data):
     """
     Parameters
     ----------
@@ -153,7 +154,35 @@ def create_small_table(data):
     table.auto_set_font_size(False)
     table.set_fontsize(5)
     table.scale(1, 2)
-    plt.show()
+    return table
+
+
+def eval_table(decay_id, data):
+    # data[vision][decay][params]
+    col_labels = ["full", "partial", "diagonal", "short"]
+    row_labels = [param for param in data["full"][decay_id]]
+    cell_text = [[f"{sum(scores) / len(scores):.2f}"
+                  for vision in col_labels
+                  if (scores := data[vision][decay_id][param]) is not None]
+                 for param in row_labels]
+
+    nrows = len(row_labels) + 1
+    ncols = len(col_labels) + 1
+    hcell, wcell = 0.1, 0.1
+    hpad, wpad = 0.5, 0.5
+
+    plt.ioff()
+    fig, ax = plt.subplots(figsize=(ncols * wcell + wpad, nrows * hcell + hpad))
+    ax.axis("off")
+    table = ax.table(cellText=cell_text,
+                     rowLabels=row_labels,
+                     colLabels=col_labels,
+                     loc="center")
+    table.auto_set_font_size(False)
+    table.set_fontsize(5)
+    table.scale(1, 2)
+    plt.tight_layout()
+    return table
 
 
 def convert_data(data):
