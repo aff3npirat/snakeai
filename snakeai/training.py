@@ -40,9 +40,9 @@ def train_agent(agent=None,
         agent.train_episode(game)
 
         if save and game.score > agent.params['record']:
+            print(f"New record {game.score}")
             save_dir = f"agents/{agent.name}"
             agent.save(save_dir)
-            print(f"Saved agent to '{save_dir}'")
 
         # plot
         plot_scores.append(game.score)
