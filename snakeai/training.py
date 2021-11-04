@@ -28,8 +28,8 @@ def train_agent(agent=None,
     verbose : int
     """
     top_level = helpers.get_top_directory()
-    if isinstance(agent, str) and (top_level / agent).is_file():
-        agent = helpers.read_from_file(agent)
+    if isinstance(agent, str) and (top_level / f"agents/{agent}").is_dir():
+        agent = helpers.read_from_file(f"agents/{agent}/{agent}.pkl")
         print(f"Loaded agent {agent.name}")
     game = SnakeGame(w, h, verbose >= 3)
 
